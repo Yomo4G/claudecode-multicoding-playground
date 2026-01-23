@@ -53,8 +53,8 @@ ai-multicoding-playground/
 
 Run:
 ```bash
-git clone https://github.com/st-tech/ai-multicoding-playground.git  
-cd ai-multicoding-playground
+git clone https://github.com/Yomo4G/claudecode-multicoding-playground.git  
+cd claudecode-multicoding-playground
 ```
 
 ### 2. Run setup (configuration only)
@@ -134,7 +134,7 @@ This has **no impact on Git operations** and is completely safe.
 Example:
 
 ```bash
-mv ai-multicoding-playground your-product-name  
+mv claudecode-multicoding-playground your-product-name  
 cd your-product-name
 ```
 
