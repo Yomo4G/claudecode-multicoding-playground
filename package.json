@@ -1,0 +1,13 @@
+{
+  "name": "ai-multicoding-playground",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.13.0"
+  },
+  "packageManager": "pnpm@latest",
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "setup:reset": "node scripts/setup.mjs --force"
+  }
+}
