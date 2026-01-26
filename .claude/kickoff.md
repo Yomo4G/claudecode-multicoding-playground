@@ -7,6 +7,25 @@ It does not define governance by itself.
 Kickoff is a **one-time initialization ritual**.
 It exists only to turn explicit human decisions into governance files.
 
+We are about to begin the **Context Definition** phase.
+
+In this phase, we will clarify the foundations of this project:
+its purpose, scope, actors, and core concepts.
+The goal is to establish shared context that will be treated as
+assumed truth in all later phases.
+
+This is **not** a planning or implementation phase.
+We will not decide how the system is built,
+what technologies are used,
+or how tasks are executed.
+
+You remain in control at all times.
+I will propose questions and draft context documents,
+but nothing will be written or finalized without your explicit approval.
+
+Once the context is sufficiently defined,
+we will move on to the next phase: **Project Framing**.
+
 If no governance directories exist under `.claude/`,
 kickoff must explain that there is nothing to initialize
 and stop without generating any files.

@@ -180,6 +180,11 @@ Kickoff is:
 - A structured Q&A with Claude
 - The only moment when governance documents are generated
 
+Kickoff always begins with a phase declaration.
+This declaration explicitly marks the start of **Context Definition**,
+clarifying that the goal is to establish shared assumptions—not to plan or implement.
+Only after context is sufficiently defined does the process move forward to **Project Framing**.
+
 Kickoff will:
 - Ask questions
 - Wait for explicit agreement
