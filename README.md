@@ -204,6 +204,10 @@ From this stage onward, work is executed through explicitly defined tasks.
 Tasks are proposed during planning, approved by humans, and executed by Claude
 with dependencies respected and progress tracked under `.claude/tasks` and `.claude/state`.
 
+State records execution facts only.
+It tracks what has happened and what is currently true,
+while human judgment remains the final authority over completion.
+
 Once kickoff is complete:
 - Governance documents exist under enabled .claude/* directories
 - Claude is now constrained by those documents
