@@ -196,6 +196,11 @@ Kickoff will **not**:
 - Modify product code
 - Introduce new concepts
 
+Before execution begins, the project must pass **Project Framing**.
+Project Framing uses an explicit checklist to confirm readiness,
+define rules and tasks, and require a conscious human GO
+before planning and implementation proceed.
+
 If no governance directories were enabled during setup,
 running kickoff will simply explain that there is nothing to initialize.
 
