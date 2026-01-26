@@ -200,6 +200,10 @@ not in your terminal.
 
 ## ▶️ After Kickoff: What Happens Next
 
+From this stage onward, work is executed through explicitly defined tasks.
+Tasks are proposed during planning, approved by humans, and executed by Claude
+with dependencies respected and progress tracked under `.claude/tasks` and `.claude/state`.
+
 Once kickoff is complete:
 - Governance documents exist under enabled .claude/* directories
 - Claude is now constrained by those documents
