@@ -8,15 +8,11 @@ At the initial stage:
 - Focus on planning, configuration, and agreement first.
 - All major technical choices must be explicitly confirmed.
 
----
-
 # Repository Characteristics
 
 - Repository type: single repository (NOT monorepo)
 - Target domain: frontend applications
 - This repository may be used by multiple users after cloning.
-
----
 
 # Claude Governance Model
 
@@ -36,8 +32,6 @@ This model ensures that:
 - Human decisions are expressed as filesystem structure.
 - The AI does not infer, guess, or expand governance concepts.
 
----
-
 # Operating System Context
 
 This project may be used on different operating systems.
@@ -53,8 +47,6 @@ Rules:
 - The AI must confirm the user's OS before suggesting CLI commands or scripts.
 - If OS-specific differences exist, they must be clearly stated.
 
----
-
 # Configuration-First Policy (CRITICAL)
 
 This project follows a **configuration-first** approach.
@@ -65,8 +57,6 @@ All major technical decisions MUST be:
 3. Treated as immutable facts by the AI
 
 The AI must NEVER infer or assume these choices.
-
----
 
 # Supported Frameworks (Selectable)
 
@@ -87,8 +77,6 @@ Rules:
 - Framework selection must be confirmed via configuration
   before any product code is written.
 
----
-
 # Lint / Formatter Policy (Selectable)
 
 Multiple linting and formatting tools are supported.
@@ -104,8 +92,6 @@ Rules:
 - The selected tool is the single source of truth.
 - Tooling must be confirmed via configuration
   before generating configs or code.
-
----
 
 # Testing Policy (Selectable)
 
@@ -123,8 +109,6 @@ Rules:
 - Testing tool selection must align with the chosen framework.
 - Test generation is prohibited until the tool is confirmed.
 
----
-
 # Project Configuration Source of Truth
 
 All selections related to the project structure
@@ -141,8 +125,6 @@ Rules:
   and must not suggest alternatives unless explicitly asked.
 - If there is any conflict between configuration files and filesystem state,
   the filesystem state must be treated as authoritative.
-
----
 
 # Setup and Kickoff Responsibilities
 
@@ -163,8 +145,6 @@ Rules:
 - Kickoff must ignore non-existent `.claude/` directories.
 - Setup decisions may be extended later by manual directory creation.
 
----
-
 # AI Workflow Rules
 
 Before writing or modifying any product code, the AI must:
@@ -178,8 +158,6 @@ Before writing or modifying any product code, the AI must:
 5. Wait for explicit human approval
 
 Coding without approval is prohibited.
-
----
 
 # Multi-Agent Assumptions
 
@@ -197,8 +175,6 @@ to avoid polluting the main implementation thread.
 - The use of agents does NOT grant decision-making authority.
 - All agents are strictly bound by the same governance rules.
 
----
-
 # Documentation Scope Rules
 
 README.md files are for human understanding only.
@@ -208,8 +184,6 @@ Rules:
 - Only configuration files and governance documents define behavior.
 - Explanatory text must never override explicit configuration or filesystem state.
 
----
-
 # Prohibited Actions
 
 - Assuming defaults for OS, frameworks, or tools
@@ -218,8 +192,6 @@ Rules:
 - Generating boilerplate projects by default
 - Performing large refactors without instruction
 - Treating recommendations as decisions
-
----
 
 # Guiding Principle
 

@@ -11,15 +11,11 @@ If no governance directories exist under `.claude/`,
 kickoff must explain that there is nothing to initialize
 and stop without generating any files.
 
----
-
 ## Preconditions
 
 - This command MUST be executed only after `setup` is completed.
 - This command MUST NOT be used during normal project operation.
 - This command MUST follow all rules defined in `/CLAUDE.md`.
-
----
 
 ## Scope of Authority
 
@@ -38,15 +34,11 @@ Kickoff MUST NOT:
 - Modify configuration files unless explicitly instructed
 - Perform refactoring or implementation tasks
 
----
-
 ## Directory Handling Rules
 
 - Only directories that already exist under `.claude/` are considered enabled.
 - If a directory does not exist, it MUST be ignored completely.
 - The absence of a directory means the concept is not adopted in this project.
-
----
 
 ## Execution Rules
 
@@ -61,15 +53,11 @@ For each enabled governance directory:
 
 Bulk generation is prohibited.
 
----
-
 ## Generation Rules
 
 - Generated files MUST be concrete, unambiguous, and machine-readable.
 - Do NOT include explanations, comments, or guidance text in generated files.
 - Do NOT restate information already defined in `/CLAUDE.md`.
-
----
 
 ## State Management
 
@@ -81,8 +69,6 @@ Bulk generation is prohibited.
 
 - The state file MUST be treated as append-only.
 - Do NOT modify or delete existing state entries.
-
----
 
 ## Failure Handling
 
@@ -96,8 +82,6 @@ In such cases:
 - Explain why execution stopped
 - Ask for clarification or correction
 - Do NOT proceed automatically
-
----
 
 ## Completion
 
