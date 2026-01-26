@@ -6,85 +6,79 @@ Plan • Agreement • Implementation
 
 ## 🧠 Concept
 
-This repository is a starter template for building projects with **Claude Code** using **parallel and structured workflows**.
+This repository is a **starter template for human-governed AI development**
+using **Claude Code**.
 
-It is meant to be a foundation for:
-- Running Claude Code in parallel to complete product code
-- Making human decisions explicit before any code is written
-- Letting AI focus on implementation, review, and verification after agreement
+It is designed around a simple but strict idea:
 
-⚠️ **No agents are defined yet.**  
-Agents should be created **per project**, based on actual needs and usage patterns.
+AI does not decide.  
+Humans decide first, and AI executes those decisions.
 
-This repository is a **foundation**, not a finished system.
+This repository provides:
+- A clear separation between decision-making and implementation
+- A filesystem-based governance model that Claude must follow
+- A reproducible setup process that makes human choices explicit
+- A controlled kickoff ritual that turns agreements into documents
 
-For real projects, see [Recommended Usage](#recommended-usage-fork-based-workflow) below.
+⚠️ This repository is a **foundation**, not a finished system.  
+It intentionally starts minimal and grows **only when humans decide to add structure**.
 
 ## 🧭 Guiding Principles
 
-- Human decisions come first
-- Configuration defines reality
-- AI follows, never leads
-- Abstractions are earned, not assumed
+- 🧑 Human decisions come first  
+- 📐 Configuration defines reality  
+- 🤖 AI follows, never leads  
+- 🧱 Structure is introduced only when needed  
 
 ## ⚠️ Important Notice (Claude Usage)
 
 - This repository does **not** include Claude itself.
-- Claude subscription/contract, authentication, and installation are **the responsibility of each user**.
-- Install and configure Claude Code according to the official documentation before using this repository.
+- Claude subscription, authentication, and installation are the responsibility of each user.
+- Install and configure **Claude Code** according to the official documentation before use.
 
-## 🗂️ Directory Structure Overview
+## 🗂️ Repository Structure (Initial State)
+
+The repository starts in a **minimal but strict state**.
 
 ```
-ai-multicoding-playground/
-  ├─ CLAUDE.md            # Always-on instructions that define how AI behaves in this repository
-  ├─ README.md            # Entry point explaining the concept, usage, and overall workflow
-  ├─ project.config.json  # Explicit technical decisions selected by humans via setup
-  ├─ scripts/             # Automation helpers that support the workflow (e.g. interactive setup)
-  ├─ contexts/            # Project context describing what is being built and why (business, domain, background)
-  ├─ rules/               # Project rules and constraints defining how the project should be built
-  ├─ agents/              # Definitions of AI roles used for parallel thinking and task separation
-  └─ commands/            # Custom slash commands that standardize proven workflows
+/claudecode-multicoding-playground (you will rename this directory)
+├─ .claude/
+│  ├─ kickoff.md          # One-time initialization ritual (no governance by itself)
+│  └─ state/
+│     └─ kickoff.json     # Append-only record of kickoff actions
+│
+├─ scripts/
+│  └─ setup.mjs           # Interactive setup (human decisions only)
+│
+├─ CLAUDE.md              # The single, authoritative rulebook for Claude
+├─ README.md              # This document (human-oriented)
+├─ project.config.json    # Explicit technical decisions selected by humans
+├─ package.json
+└─ LICENSE
 ```
+
+### Important design rules
+
+- .claude/ contains **only machine-readable governance assets**
+- No explanatory README files exist under .claude/
+- The **existence of a directory under .claude/ means it was explicitly enabled by humans**
+- Missing directories mean the concept is **not adopted**
+
+## 🧠 Claude Governance Model (Core Idea)
+
+Claude is governed by **filesystem state**, not inference.
+
+- If a directory exists under .claude/, Claude must treat it as enabled
+- If a directory does not exist, Claude must ignore the concept entirely
+- Humans may add new governance directories **at any time**
+- Claude must never create, remove, or rename .claude/ directories on its own
+
+This ensures:
+- Decisions are explicit
+- History is inspectable
+- AI behavior is deterministic
 
 ## 🚀 Quick Start
-
-### 1. Clone the repository
-
-Run:
-```bash
-git clone https://github.com/Yomo4G/claudecode-multicoding-playground.git  
-cd claudecode-multicoding-playground
-```
-
-### 2. Run setup (configuration only)
-
-This project uses **pnpm**.
-
-Run:
-```bash
-pnpm run setup
-```
-
-What this does:
-- Asks you to select runtime, framework, lint/format, and test tools
-- Updates project.config.json
-- Does **not** install dependencies
-- Does **not** generate product code
-
-This step is **fully reversible**.
-
-### 3. Reset and re-select options (if needed)
-
-To redo all selections, run:
-
-```bash
-pnpm run setup:reset
-```
-
-You can also manually edit project.config.json and set values back to null, then run pnpm run setup again.
-
-## 🤝 Recommended Usage: Fork-based Workflow
 
 This repository is designed as a **template and foundation** for AI-driven parallel development.
 While it is technically possible to implement product code directly in this repository,
@@ -138,161 +132,147 @@ mv claudecode-multicoding-playground your-product-name
 cd your-product-name
 ```
 
-This helps keep:
-- Local paths
-- Editor workspaces
-- Documentation references
+This step has no impact on Git history and is completely safe,
+but it has a **significant impact on clarity and AI behavior**.
 
-consistent and easy to understand.
+### 🔹 Step5: Run setup (human decisions only)
 
-### 🔹 Step5: Run setup and start planning
-
-Run the interactive setup to select runtime, framework, and tooling.
+#### Requirements:
+- Node.js v24.13.0 or later (required for setup)
+- pnpm
 
 ```bash
 pnpm run setup
 ```
 
-After setup is complete, open Claude Code and start with:
+What setup does:
+- Asks you to select:
+  - Runtime (Node / Deno / Bun)
+  - Frontend framework
+  - Lint / formatter
+  - Testing tool
+- Writes those decisions to project.config.json
+- Asks (y/n) which Claude governance layers to enable
+- Creates only the selected .claude/* directories
+
+What setup does **not** do:
+- ❌ Install dependencies
+- ❌ Generate product code
+- ❌ Define governance content
+
+Setup is **fully reversible**.
 
 ```bash
-/plan
+pnpm run setup:reset
 ```
 
-At this point:
-- Technical assumptions are explicit
-- Configuration is fixed
-- You are ready to move from planning to implementation
+You can also manually edit project.config.json and set values back to null, then run pnpm run setup again.
 
-### Summary of this workflow
+### 🔹 Step6: Initialize governance with kickoff
 
-- Forking is **recommended**, not required
-- Renaming the fork is **strongly recommended**
-- Local directory renaming is **optional but helpful**
-- This workflow keeps template and product concerns cleanly separated
+After setup:
 
-## ▶️ After Setup: What to Do Next
+Review .claude/kickoff.md  
+Run /kickoff in Claude Code
 
-Once project.config.json is filled:
+Kickoff is:
+- A **one-time initialization ritual**
+- A structured Q&A with Claude
+- The only moment when governance documents are generated
 
-👉 Open Claude and run: /plan
+Kickoff will:
+- Ask questions
+- Wait for explicit agreement
+- Generate **one file at a time**
+- Record actions in .claude/state/kickoff.json
 
-You should:
-- Confirm the selected runtime, framework, lint, and test tools
-- Plan dependency installation and configuration generation
-- Agree on steps **before** writing any product code
+Kickoff will **not**:
+- Create directories
+- Modify product code
+- Introduce new concepts
 
-This repository intentionally enforces:
+If no governance directories were enabled during setup,
+running kickoff will simply explain that there is nothing to initialize.
 
-Plan → Agreement → Implementation
+Note:
+Claude commands such as /kickoff are executed **inside Claude Code**,
+not in your terminal.
 
-## 🎛️ Selectable Options in Setup
+## ▶️ After Kickoff: What Happens Next
 
-### Runtime
+Once kickoff is complete:
+- Governance documents exist under enabled .claude/* directories
+- Claude is now constrained by those documents
+- You can safely move to planning and implementation
 
-- Node.js  
-  https://nodejs.org/
+From this point forward:
 
-- Deno  
-  https://deno.com/
+🧠 Plan  
+🤝 Agree  
+⚙️ Implement  
 
-- Bun  
-  https://bun.sh/
+## 🎛️ Project Configuration
 
-### Frontend Frameworks
+### Framework / Lint / Testing
 
-- React  
-  https://react.dev/
+All technical selections are:
+- Explicitly chosen by humans
+- Stored in project.config.json
+- Treated as immutable facts by Claude
 
-- Vue.js  
-  https://vuejs.org/
+Claude must never assume defaults.
 
-- Next.js  
-  https://nextjs.org/
+### Runtime (Node / Bun / Deno)
 
-- Nuxt.js  
-  https://nuxt.com/
+The selected runtime represents the **execution environment**.
 
-- Astro  
-  https://astro.build/
+- Runtime selection is an explicit human decision
+- It is stored in project.config.json for reproducibility
+- Runtime choice does **not** define project architecture
+- Changing runtime does not imply framework or tooling changes
 
-- Gatsby  
-  https://www.gatsbyjs.com/
+Runtime is treated as an execution constraint,
+not as part of the product’s functional design.
 
-### Lint / Formatter
+## 🔐 Node.js Version Requirement (Setup Only)
 
-- Biome  
-  https://biomejs.dev/
+Running scripts/setup.mjs requires **Node.js v24.13.0 or later**.
 
-- ESLint  
-  https://eslint.org/
+Why:
+- A widely publicized, security-critical vulnerability affecting earlier
+  Node.js versions was fixed in v24.13.0
+- Setup performs filesystem and configuration operations that must
+  run in a secure environment
 
-- Prettier  
-  https://prettier.io/
+This requirement applies **only to the setup process**.
+It does not mandate the Node.js version used for application development
+unless Node.js is explicitly selected as the runtime.
 
-### Testing Tools
+## 🧩 Growing the Governance Structure (Later)
 
-- Playwright  
-  https://playwright.dev/
+Over time, you may introduce additional governance layers by
+**manually creating directories under .claude/**, for example:
 
-- Vitest  
-  https://vitest.dev/
+- .claude/contexts/ – project purpose, assumptions, constraints
+- .claude/rules/ – hard rules and prohibitions
+- .claude/skills/ – explicitly allowed actions
+- .claude/output-styles/ – standardized output formats
+- .claude/workflows/ – approved step-by-step procedures
+- .claude/quality-gates/ – checklists and verifiable conditions
+- .claude/hooks/ – deterministic enforcement points
+- .claude/agents/ – optional AI role definitions
+- .claude/mcp/ – approved external integrations
 
-- Jest  
-  https://jestjs.io/
+The act of creating a directory is itself an **explicit human decision**.
 
-- Cypress  
-  https://www.cypress.io/
+## 🏁 Final Note
 
-## 🧩 About Contexts, Rules, Agents, and Commands
+This repository enforces one invariant:
 
-### Contexts
+AI never decides what to build or how to govern itself.  
+Humans decide.  
+Filesystem state makes those decisions real.
 
-The contexts directory contains project context documents
-that describe **what is being built and why**.
+Everything else is intentionally left flexible.
 
-These files are expected to be generated through
-AI-guided conversations and refined by humans.
-
-Typical content includes:
-- Business goals and background
-- Domain concepts and terminology
-- Assumptions and constraints
-
-See: [contexts/README.md](contexts/README.md)
-
-### Rules
-
-The rules directory contains explicit project rules and constraints
-that define **how the project should be built**.
-
-These files are also expected to be generated via AI-assisted dialogue
-and treated as enforceable agreements.
-
-Typical content includes:
-- Coding standards
-- Architectural constraints
-- Non-functional requirements
-- Prohibited practices
-
-See: [rules/README.md](rules/README.md)
-
-### Agents
-
-The agents directory is reserved for Claude agent definitions.
-
-Agents are intentionally not pre-defined to avoid premature abstraction.
-Add agents only after real work reveals recurring roles that benefit from parallel execution.
-
-See: [agents/README.md](agents/README.md)  
-
-### Commands
-
-The commands directory is reserved for custom slash commands.
-
-Commands should be created only after workflows are:
-- Clearly defined
-- Repeated multiple times
-- Stable enough to automate
-
-See: [commands/README.md](commands/README.md)
+Happy multicoding 🚀
