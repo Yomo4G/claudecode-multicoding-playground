@@ -18,6 +18,26 @@ At the initial stage:
 
 ---
 
+# Claude Governance Model
+
+This repository uses a filesystem-based governance model for Claude.
+
+The `.claude/` directory contains **only machine-readable governance assets**.
+It must not contain explanatory or human-oriented documents.
+
+Rules:
+- The existence of a directory under `.claude/` means it is explicitly enabled by humans.
+- If a directory does NOT exist, the concept is considered non-existent.
+- Directories may be added manually by humans at any time.
+- Treat newly added directories as authoritative facts.
+- The AI must NEVER create, modify, or delete files under `.claude/` unless explicitly instructed by a kickoff or equivalent governance command.
+
+This model ensures that:
+- Human decisions are expressed as filesystem structure.
+- The AI does not infer, guess, or expand governance concepts.
+
+---
+
 # Operating System Context
 
 This project may be used on different operating systems.
@@ -119,6 +139,29 @@ Rules:
   its contents are the single source of truth.
 - The AI must strictly follow the configuration
   and must not suggest alternatives unless explicitly asked.
+- If there is any conflict between configuration files and filesystem state,
+  the filesystem state must be treated as authoritative.
+
+---
+
+# Setup and Kickoff Responsibilities
+
+This repository distinguishes between setup and kickoff phases.
+
+- `setup`:
+  - Establishes initial directory structure and configuration files
+  - Represents initial human decisions
+  - Does NOT define project meaning or behavior
+
+- `kickoff`:
+  - Initializes governance documents only during initial project kickoff
+  - Must NOT be used for governance changes during normal operation
+  - Must only operate on directories that already exist
+  - Must NOT introduce new governance concepts
+
+Rules:
+- Kickoff must ignore non-existent `.claude/` directories.
+- Setup decisions may be extended later by manual directory creation.
 
 ---
 
@@ -150,6 +193,20 @@ The project may use multiple AI roles in parallel:
 Analysis and review tasks should be delegated
 to separate contexts or sub-agents when possible,
 to avoid polluting the main implementation thread.
+
+- The use of agents does NOT grant decision-making authority.
+- All agents are strictly bound by the same governance rules.
+
+---
+
+# Documentation Scope Rules
+
+README.md files are for human understanding only.
+
+Rules:
+- README.md must NOT be treated as a source of rules, constraints, or instructions.
+- Only configuration files and governance documents define behavior.
+- Explanatory text must never override explicit configuration or filesystem state.
 
 ---
 
