@@ -16,6 +16,7 @@ const REQUIRED_NODE_VERSION = "24.13.0";
 function parseVersion(v) {
   return v.split(".").map(Number);
 }
+
 function isGte(a, b) {
   const A = parseVersion(a);
   const B = parseVersion(b);
@@ -41,6 +42,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, "..");
 const CONFIG_PATH = path.join(ROOT_DIR, "project.config.json");
+const CLAUDE_DIR = path.join(ROOT_DIR, ".claude");
 
 const FORCE = process.argv.includes("--force");
 
@@ -53,6 +55,18 @@ const ALLOWED = {
   lint: ["biome", "eslint", "prettier"],
   test: ["playwright", "vitest", "jest", "cypress"],
 };
+
+const GOVERNANCE_DIRS = [
+  { name: "contexts", desc: "Project purpose / assumptions" },
+  { name: "rules", desc: "Hard constraints and prohibitions" },
+  { name: "skills", desc: "Explicitly allowed actions for Claude" },
+  { name: "output-styles", desc: "Standardized output formats" },
+  { name: "workflows", desc: "Approved step-by-step procedures" },
+  { name: "quality-gates", desc: "Checklists and verifiable conditions" },
+  { name: "hooks", desc: "Deterministic enforcement points" },
+  { name: "agents", desc: "Optional AI role definitions" },
+  { name: "mcp", desc: "Approved external integrations" },
+];
 
 const DEFAULT_CONFIG = {
   runtime: null,
@@ -109,6 +123,15 @@ async function choose(rl, label, options, current) {
   }
 }
 
+async function yesNo(rl, question) {
+  while (true) {
+    const a = (await rl.question(`${question} (y/n): `)).trim().toLowerCase();
+    if (a === "y") return true;
+    if (a === "n") return false;
+    console.log("Please answer with y or n.");
+  }
+}
+
 /* =======================
    Runtime-specific checks
 ======================= */
@@ -130,8 +153,9 @@ async function main() {
   const rl = readline.createInterface({ input, output });
 
   try {
-    console.log("=== Project Setup (runtime-selectable) ===\n");
+    console.log("=== Project Setup ===\n");
 
+    /* ---- Configuration selection ---- */
     const existing = (await readConfig()) ?? { ...DEFAULT_CONFIG };
     const cfg = { ...DEFAULT_CONFIG, ...existing };
     validate(cfg);
@@ -152,7 +176,36 @@ async function main() {
 
     console.log("\n✅ project.config.json updated:");
     console.log(JSON.stringify(cfg, null, 2));
-    console.log("\nNext: use /plan to decide installs & config generation.\n");
+
+    /* ---- Claude governance directories ---- */
+    console.log("\n=== Claude Governance Setup ===");
+    console.log(
+      "Select which governance layers to enable.\n" +
+        "Directories will be created under .claude/.\n" +
+        "You can add more later by creating directories manually.\n",
+    );
+
+    for (const g of GOVERNANCE_DIRS) {
+      const enable = await yesNo(rl, `Enable ${g.name}? (${g.desc})`);
+
+      if (enable) {
+        const dirPath = path.join(CLAUDE_DIR, g.name);
+        await fs.mkdir(dirPath, { recursive: true });
+        console.log(`  ✓ Created .claude/${g.name}/`);
+      }
+    }
+
+    /* ---- Next steps ---- */
+    console.log(`
+✅ Setup completed.
+
+Next steps:
+- Review .claude/kickoff.md
+- Run /kickoff to initialize governance documents
+  (only for directories that were enabled)
+
+No product code will be generated until kickoff is completed.
+`);
   } finally {
     rl.close();
   }
