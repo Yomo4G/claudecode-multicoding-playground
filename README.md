@@ -46,9 +46,9 @@ The repository starts in a **minimal but strict state**.
 │  ├─ kickoff.md                  # Ritual to start Context Definition (phase declaration)
 │  ├─ plan.md                     # Project Framing specification and readiness checklist
 │  ├─ commands/                   # Explicit commands that trigger state transitions
-│  │  └─ yoroshiku.md              # GO command that hands execution over to Claude Code
+│  │  └─ yoroshiku.md             # GO command that hands execution over to Claude Code
 │  └─ rules/                      # Rules that constrain Claude Code behavior
-│     └─ mcp-usage.md              # MCP usage policy (human-managed, security-sensitive)
+│     └─ mcp-usage.md             # MCP usage policy (human-managed, security-sensitive)
 │
 ├─ scripts/                       # Helper scripts for setup and automation
 │  └─ setup.mjs                   # Interactive setup reflecting human decisions only
