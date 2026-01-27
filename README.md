@@ -282,6 +282,9 @@ before execution is allowed to proceed.
 - Propose rules, tasks, and completion criteria
 - Pause for explicit human approval before writing any files
 
+External integrations such as MCP are governed by explicit usage policies.
+MCP configuration files and credentials are managed manually by humans and are never generated or modified by Claude Code.
+
 From this point forward:
 
 🧠 Plan  
