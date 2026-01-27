@@ -78,6 +78,52 @@ This ensures:
 - History is inspectable
 - AI behavior is deterministic
 
+## 💡 Idea Discovery (Before Using Claude Code)
+
+Before working with Claude Code, start with **Idea Discovery**.
+
+Use `idea-discovery.txt` as a starting prompt with your preferred AI assistant
+to explore and clarify early-stage ideas, assumptions, and business intent.
+
+This step is intentionally:
+- Exploratory and open-ended
+- Free of implementation or technical decisions
+- Focused on generating draft inputs for Context Definition
+
+The outputs of Idea Discovery are **not final documents**.
+They are inputs that will later be refined and formalized during `/kickoff`.
+
+<details>
+<summary>How to provide Idea Discovery outputs to /kickoff (optional)</summary>
+
+Idea Discovery produces **draft notes and hypotheses**, not final documents.
+These drafts are used as input during `/kickoff` to generate formal context files.
+
+You can provide Idea Discovery outputs to Claude Code in either of the following ways:
+
+### Option 1: Place drafts in the repository (recommended)
+
+Save your notes or drafts anywhere in the repository (for example, under a `notes/` or `drafts/` directory).
+When you run `/kickoff`, Claude Code will read these files as input.
+
+This approach is recommended because it:
+- Keeps inputs visible and reproducible
+- Allows you to review and revise drafts before formalization
+- Makes it clear what assumptions are being carried forward
+
+### Option 2: Paste drafts directly into the conversation
+
+Alternatively, you may paste Idea Discovery outputs directly into the Claude Code conversation
+when prompted during `/kickoff`.
+
+This approach is acceptable for quick experiments,
+but may be less reproducible than keeping drafts as files.
+
+In both cases, the drafts do not need to be complete or correct.
+They serve as **inputs** that will be reviewed, refined, and formalized during Context Definition.
+
+</details>
+
 ## 🚀 Quick Start
 
 This repository is designed as a **template and foundation** for AI-driven parallel development.
