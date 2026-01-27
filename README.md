@@ -285,6 +285,11 @@ before execution is allowed to proceed.
 External integrations such as MCP are governed by explicit usage policies.
 MCP configuration files and credentials are managed manually by humans and are never generated or modified by Claude Code.
 
+When Project Framing is complete and you are ready to proceed,
+run **/yoroshiku** in Claude Code.
+
+`/yoroshiku` explicitly grants GO and hands execution over to Claude Code.
+
 From this point forward:
 
 🧠 Plan  
