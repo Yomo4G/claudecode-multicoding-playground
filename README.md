@@ -42,19 +42,23 @@ The repository starts in a **minimal but strict state**.
 
 ```
 /claudecode-multicoding-playground (you will rename this directory)
-├─ .claude/
-│  ├─ kickoff.md          # One-time initialization ritual (no governance by itself)
-│  └─ state/
-│     └─ kickoff.json     # Append-only record of kickoff actions
+├─ .claude/                       # Governance root read by Claude Code
+│  ├─ kickoff.md                  # Ritual to start Context Definition (phase declaration)
+│  ├─ plan.md                     # Project Framing specification and readiness checklist
+│  ├─ commands/                   # Explicit commands that trigger state transitions
+│  │  └─ yoroshiku.md              # GO command that hands execution over to Claude Code
+│  └─ rules/                      # Rules that constrain Claude Code behavior
+│     └─ mcp-usage.md              # MCP usage policy (human-managed, security-sensitive)
 │
-├─ scripts/
-│  └─ setup.mjs           # Interactive setup (human decisions only)
+├─ scripts/                       # Helper scripts for setup and automation
+│  └─ setup.mjs                   # Interactive setup reflecting human decisions only
 │
-├─ CLAUDE.md              # The single, authoritative rulebook for Claude
-├─ README.md              # This document (human-oriented)
-├─ project.config.json    # Explicit technical decisions selected by humans
-├─ package.json
-└─ LICENSE
+├─ idea-discovery.txt             # Generic Idea Discovery prompt (human + any AI assistant)
+├─ CLAUDE.md                      # Global, always-on rules for Claude Code
+├─ README.md                      # Human-oriented documentation and usage guide
+├─ project.config.json            # Explicit technical decisions selected by humans
+├─ package.json                   # Node.js project metadata and scripts
+└─ LICENSE                        # Repository license information
 ```
 
 ### Important design rules
