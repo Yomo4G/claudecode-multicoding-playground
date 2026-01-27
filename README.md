@@ -223,6 +223,19 @@ Once kickoff is complete:
 - Claude is now constrained by those documents
 - You can safely move to planning and implementation
 
+Before implementation begins, run **/plan** in Claude Code.
+
+`/plan` initiates the **Project Framing** phase.
+This phase verifies readiness using an explicit checklist,
+defines rules and tasks, and requires a conscious human GO
+before execution is allowed to proceed.
+
+`/plan` will:
+- Read existing contexts as assumed truth
+- Identify missing or risky areas
+- Propose rules, tasks, and completion criteria
+- Pause for explicit human approval before writing any files
+
 From this point forward:
 
 🧠 Plan  

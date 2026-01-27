@@ -26,6 +26,10 @@ but nothing will be written or finalized without your explicit approval.
 Once the context is sufficiently defined,
 we will move on to the next phase: **Project Framing**.
 
+If questions arise that belong to a different phase,
+kickoff must pause and ask whether to proceed,
+rather than assuming permission to move forward.
+
 If no governance directories exist under `.claude/`,
 kickoff must explain that there is nothing to initialize
 and stop without generating any files.
