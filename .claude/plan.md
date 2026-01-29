@@ -61,14 +61,21 @@ for granting GO to execution.
 This checklist may evolve per project,
 but all items must be explicitly reviewed.
 
-### PF-1: Context Readiness
+### PF-1: Technical Setup
+
+- [ ] Technical setup has been completed.
+- [ ] Required runtimes, tools, and directories exist.
+- [ ] The current environment reflects the technical assumptions
+      agreed upon before execution.
+
+### PF-2: Context Readiness
 
 - [ ] All context sections are filled.
 - [ ] Content may be provisional or based on assumptions.
 - [ ] No section is left undefined or empty.
 - [ ] Open questions and assumptions are explicitly documented.
 
-### PF-2: Rules Readiness
+### PF-3: Rules Readiness
 
 - [ ] A rule exists that requires testing for all tasks.
 - [ ] A rule exists that enforces explicit Done definitions per task.
@@ -78,7 +85,7 @@ but all items must be explicitly reviewed.
   - updating contexts if necessary
   - optionally consulting an engineer
 
-### PF-3: Task Readiness
+### PF-4: Task Readiness
 
 - [ ] Each task documents:
   - its Done criteria
@@ -89,7 +96,7 @@ but all items must be explicitly reviewed.
       or must be executed sequentially.
 - [ ] The set of tasks that can be started first is clearly identified.
 
-### PF-4: Human GO Responsibility
+### PF-5: Human GO Responsibility
 
 Before granting GO, the responsible human confirms:
 
