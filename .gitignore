@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# Package manager lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# IDE and editor files
+.vscode/
+
+# OS generated files
+.DS_Store
