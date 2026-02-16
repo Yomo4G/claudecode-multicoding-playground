@@ -328,21 +328,32 @@ Before writing or modifying any product code, the AI must:
 
 Coding without approval is prohibited.
 
-# Multi-Agent Assumptions
+# Multi-Agent Orchestration
 
-The project may use multiple AI roles in parallel:
+When `.claude/agents/` exists, the project uses
+a multi-agent orchestration system.
 
-- Implementer: writes code after approval
-- Reviewer: reviews architecture and design decisions
-- Refactorer: simplifies and improves structure
-- Verifier: focuses on testing and validation
+Agent definitions live in `.claude/agents/*.yaml`.
+Team composition is defined in `.claude/agents/team.yaml`.
+Orchestration rules are in `.claude/rules/agent-orchestration.md`.
 
-Analysis and review tasks should be delegated
-to separate contexts or sub-agents when possible,
-to avoid polluting the main implementation thread.
+The system defines 7 roles:
 
-- The use of agents does NOT grant decision-making authority.
+- Orchestrator: coordinates task assignment and agent lifecycle
+- Implementer: writes product code after approval
+- Reviewer: reviews code for quality and architecture
+- SecurityAuditor: audits code and dependencies for security
+- Verifier: runs tests, lint, and build checks
+- Refactorer: simplifies and improves code structure (on-demand)
+- Reporter: updates dashboard.md with execution state
+
+Rules:
+- Agent definition files (`.claude/agents/**`) are PROTECTED.
+- The AI must not modify agent definitions during execution.
 - All agents are strictly bound by the same governance rules.
+- The use of agents does NOT grant decision-making authority.
+- When `.claude/agents/` does not exist,
+  Claude Code operates in single-agent mode.
 
 # Documentation Scope Rules
 
@@ -375,6 +386,14 @@ If it exists, read all YAML files and load them
 as reusable skill definitions for the current session.
 If it does not exist, the Skill Proposal Lifecycle is disabled.
 Do not propose, record, or generate skills.
+
+Additionally, check if `.claude/agents/` directory exists.
+If it exists, read `.claude/agents/team.yaml`
+and all agent definition YAMLs in `.claude/agents/`.
+Load them as the multi-agent team configuration
+for the current session.
+If the directory does not exist,
+operate in single-agent mode.
 
 # Guiding Principle
 

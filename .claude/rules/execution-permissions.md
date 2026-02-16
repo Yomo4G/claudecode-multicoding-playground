@@ -35,6 +35,7 @@ Any modification outside these paths requires explicit human approval.
 - `.claude/commands/**`
 - `.claude/rules/**`
 - `.claude/contexts/**`
+- `.claude/agents/**`
 - `.claude/project-framing.md`
 - `scripts/**`
 - `README.md`

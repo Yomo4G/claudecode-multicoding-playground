@@ -45,6 +45,15 @@ by `name`, `trigger`, and `tags`.
 - If the candidate extends an existing skill,
   record it as an extension candidate instead.
 
+Additionally, if `.claude/agents/` exists:
+- Read all files in `.claude/state/skill-candidates/*.json`
+- Compare the candidate against pending candidates
+  from other agents by `name` and `trigger`
+
+Additionally, read `dashboard.md` and check the
+`## Skill Candidates` table for existing pending candidates.
+Compare by `Name` and `Trigger` columns.
+
 ### Stage 2: Value Assessment (lightweight)
 
 Evaluate the candidate against the following criteria:

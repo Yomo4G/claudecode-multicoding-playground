@@ -10,8 +10,13 @@ When updating this file, AI agents must follow these rules:
   - Overall Progress
   - Agent Status
   - Tasks Overview
+  - Skill Candidates
   - Notes (optional)
 - Do not add or remove sections.
+- When multi-agent orchestration is active,
+  only the reporter agent may write to this file.
+- When operating in single-agent mode,
+  the main instance writes to this file directly.
 - Do not include detailed reasoning or discussion.
 - Timestamps must use the execution user's local time.
   Do NOT use UTC or any assumed timezone.
@@ -47,36 +52,53 @@ Progress: ░░░░░░░░░░░░ 0%
 
 This section shows what each agent is currently doing.
 
-| Agent Name   | Status | Current Task | Last Update |
-|--------------|--------|--------------|-------------|
-| planner      | idle   | —            | —           |
-| implementer  | idle   | —            | —           |
-| tester       | idle   | —            | —           |
+| Agent | Instance | Status | Current Task | Last Update |
+|-------|----------|--------|--------------|-------------|
+| orchestrator | orchestrator-0 | idle | — | — |
+| implementer | implementer-0 | idle | — | — |
+| reviewer | reviewer-0 | idle | — | — |
+| security-auditor | security-auditor-0 | idle | — | — |
+| verifier | verifier-0 | idle | — | — |
+| reporter | reporter-0 | idle | — | — |
 
 **Status values**
 - `idle` — waiting for work
 - `working` — actively working on a task
 - `blocked` — unable to proceed (waiting for input or dependency)
+- `error` — encountered an error (orchestrator will retry once)
 - `done` — finished assigned work
 
 ---
 
 ## Tasks Overview
 
-Tasks are grouped by their current state.
-Only agreed tasks should appear here.
+Tasks are shown with their current pipeline stage and assigned agent.
 
-### 🟡 Waiting
+| Task | Stage | Agent | Status | Updated |
+|------|-------|-------|--------|---------|
+| — | — | — | — | — |
+
+**Pipeline stages**: `implement` → `review` (parallel: reviewer + security-auditor) → `verify`
+
+### 🔴 Blocked
+
+Tasks requiring human intervention.
 
 - —
 
-### 🔵 In Progress
+---
 
-- —
+## Skill Candidates
 
-### 🟢 Done
+Skill candidates detected during execution.
+See `.claude/rules/skill-lifecycle.md` for evaluation criteria.
 
-- —
+| # | Name | Trigger | Steps | Criteria | Source | Status |
+|---|------|---------|-------|----------|--------|--------|
+
+### Candidate Details
+
+(No candidates recorded yet.)
 
 ---
 

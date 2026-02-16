@@ -155,7 +155,7 @@ Why this is recommended:
 Clone your forked (and renamed) repository to your local machine.
 
 ```bash
-git clone https://github.com/Yomo4G/claudecode-multicoding-playground.git
+git clone https://github.com/st-tech/ai-multicoding-playground.git
 ```
 
 ### 🔹 Step4: Rename the local directory (Optional but recommended)
@@ -488,7 +488,7 @@ directory existence = human decision to enable.
 The repository starts in a **minimal but strict state**.
 
 ```
-/claudecode-multicoding-playground (you will rename this directory)
+/ai-multicoding-playground (you will rename this directory)
 ├─ .claude/                       # Governance root read by Claude Code
 │  ├─ project-framing.md          # Project Framing specification and readiness checklist
 │  ├─ commands/                   # Explicit commands that trigger state transitions
