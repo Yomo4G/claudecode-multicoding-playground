@@ -1,0 +1,52 @@
+kind: agent
+name: orchestrator
+version: 1
+role: orchestrator
+description: |
+  Coordinates task assignment, agent lifecycle,
+  and workflow pipeline execution.
+  The orchestrator is the main Claude Code instance.
+responsibilities:
+  - Read team.yaml and agent definitions
+  - Spawn and terminate subagents
+  - Assign tasks based on role and availability
+  - Monitor agent status via state files
+  - Enforce workflow pipeline ordering
+  - Make scaling decisions
+  - Handle agent errors and timeouts
+authority:
+  writable_paths:
+    - ".claude/state/agent-status/**"
+    - ".claude/state/agent-results/**"
+    - ".claude/state/skill-candidates/**"
+  permitted_commands:
+    - "pnpm install"
+    - "pnpm add"
+constraints:
+  - Must not write product code directly
+  - Must not bypass workflow pipeline
+  - Must not spawn agents not defined in team.yaml
+  - Must not modify agent definition files
+activation:
+  mode: persistent
+  prerequisites:
+    - "/yoroshiku GO granted"
+    - ".claude/agents/ directory exists"
+    - ".claude/agents/team.yaml exists"
+  trigger: []
+scaling:
+  min: 1
+  max: 1
+  condition: |
+    Always exactly one instance.
+    The orchestrator cannot be scaled.
+skill_detection: false
+subagent_type: null
+context_requirements:
+  - "project.config.json"
+  - ".claude/agents/team.yaml"
+  - "dashboard.md"
+handoff: []
+tags:
+  - coordination
+  - lifecycle

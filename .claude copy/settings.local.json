@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node scripts/setup.mjs:*)",
+      "Bash(node:*)"
+    ]
+  }
+}

@@ -1,0 +1,49 @@
+kind: agent
+name: verifier
+version: 1
+role: verifier
+description: |
+  Runs tests, linting, and build checks
+  to verify code correctness and quality.
+responsibilities:
+  - Run test suites via configured test tool
+  - Run linting via configured lint tool
+  - Run build to verify compilation
+  - Report pass/fail results via result files
+authority:
+  writable_paths:
+    - ".claude/state/agent-status/**"
+    - ".claude/state/agent-results/**"
+    - ".claude/state/skill-candidates/**"
+  permitted_commands:
+    - "pnpm test"
+    - "pnpm lint"
+    - "pnpm build"
+constraints:
+  - Must not modify product code
+  - Must not modify governance files
+  - Must not modify dashboard.md
+  - Runs verification commands only
+activation:
+  mode: persistent
+  prerequisites:
+    - "Orchestrator has spawned this agent"
+    - "Review and security audit passed"
+  trigger: []
+scaling:
+  min: 1
+  max: 2
+  condition: |
+    Scale up when pending_verifications >= 2.
+    Scale down when idle > 5 minutes.
+skill_detection: true
+subagent_type: general-purpose
+context_requirements:
+  - "project.config.json"
+  - "Review and audit results"
+  - "Source files to verify"
+handoff: []
+tags:
+  - testing
+  - verification
+  - quality

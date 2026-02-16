@@ -1,0 +1,58 @@
+kind: agent
+name: implementer
+version: 1
+role: implementer
+description: |
+  Writes product code after task approval.
+  Follows the execution plan and respects
+  all governance rules and writable paths.
+responsibilities:
+  - Write product code according to task specifications
+  - Follow coding standards and framework conventions
+  - Generate placeholder images via scripts when needed
+  - Update status and report results via state files
+authority:
+  writable_paths:
+    - "src/**"
+    - "frontend/**"
+    - "backend/**"
+    - "public/**"
+    - "db/**"
+    - "tests/**"
+    - "test/**"
+    - "package.json"
+    - "pnpm-lock.yaml"
+    - "Tool configuration files at project root"
+  permitted_commands:
+    - "pnpm install"
+    - "pnpm add"
+    - "pnpm placeholders"
+constraints:
+  - Must not modify governance files
+  - Must not modify dashboard.md
+  - Must follow framework conventions from project.config.json
+  - Must use placeholder generation script for images
+activation:
+  mode: persistent
+  prerequisites:
+    - "Orchestrator has spawned this agent"
+    - "Task assigned by orchestrator"
+  trigger: []
+scaling:
+  min: 1
+  max: 3
+  condition: |
+    Scale up when task_queue_depth >= 3
+    and tasks target different files.
+    Scale down when idle > 5 minutes.
+skill_detection: true
+subagent_type: general-purpose
+context_requirements:
+  - "project.config.json"
+  - "Assigned task definition"
+handoff:
+  - reviewer
+  - security-auditor
+tags:
+  - implementation
+  - code-generation

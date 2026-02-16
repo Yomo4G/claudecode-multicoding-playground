@@ -1,0 +1,64 @@
+kind: team
+version: 1
+
+agents:
+  - name: orchestrator
+    min: 1
+    max: 1
+  - name: implementer
+    min: 1
+    max: 3
+  - name: reviewer
+    min: 1
+    max: 1
+  - name: security-auditor
+    min: 1
+    max: 1
+  - name: verifier
+    min: 1
+    max: 2
+  - name: refactorer
+    min: 0
+    max: 1
+  - name: reporter
+    min: 1
+    max: 1
+
+scaling:
+  rules:
+    - agent: implementer
+      trigger: "task_queue_depth >= 3"
+      action: scale_up
+      conflict_check:
+        - "Do not scale if all tasks target the same file"
+    - agent: implementer
+      trigger: "idle_time > 5m AND instances > min"
+      action: scale_down
+    - agent: verifier
+      trigger: "pending_verifications >= 2"
+      action: scale_up
+    - agent: verifier
+      trigger: "idle_time > 5m AND instances > min"
+      action: scale_down
+
+workflow:
+  default_pipeline:
+    - stage: implement
+      agent: implementer
+    - stage: review
+      agents:
+        - reviewer
+        - security-auditor
+      parallel: true
+    - stage: verify
+      agent: verifier
+
+reporter:
+  trigger_events:
+    - task-completed
+    - agent-error
+    - phase-transition
+    - scaling-event
+    - pre-handover
+  periodic:
+    every_n_tasks: 3
