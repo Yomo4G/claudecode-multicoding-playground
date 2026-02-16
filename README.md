@@ -155,7 +155,7 @@ Why this is recommended:
 Clone your forked (and renamed) repository to your local machine.
 
 ```bash
-git clone https://github.com/st-tech/ai-multicoding-playground.git
+git clone https://github.com/Yomo4G/claudecode-multicoding-playground.git
 ```
 
 ### 🔹 Step4: Rename the local directory (Optional but recommended)
@@ -488,21 +488,43 @@ directory existence = human decision to enable.
 The repository starts in a **minimal but strict state**.
 
 ```
-/ai-multicoding-playground (you will rename this directory)
+/claudecode-multicoding-playground (you will rename this directory)
 ├─ .claude/                       # Governance root read by Claude Code
-│  ├─ kickoff.md                  # Ritual to start Context Definition (phase declaration)
-│  ├─ plan.md                     # Project Framing specification and readiness checklist
+│  ├─ project-framing.md          # Project Framing specification and readiness checklist
 │  ├─ commands/                   # Explicit commands that trigger state transitions
-│  │  └─ yoroshiku.md             # GO command that hands execution over to Claude Code
-│  └─ rules/                      # Rules that constrain Claude Code behavior
-│     └─ mcp-usage.md             # MCP usage policy (human-managed, security-sensitive)
+│  │  ├─ kickoff.md               # Ritual to start Context Definition (phase declaration)
+│  │  ├─ plan.md                  # Project Framing planning command
+│  │  ├─ yoroshiku.md             # GO command that hands execution over to Claude Code
+│  │  └─ handover.md              # Session handover and context preservation command
+│  ├─ rules/                      # Rules that constrain Claude Code behavior
+│  │  ├─ mcp-usage.md             # MCP usage policy (human-managed, security-sensitive)
+│  │  ├─ execution-permissions.md # Writable/protected paths and permitted commands
+│  │  ├─ skill-lifecycle.md       # Skill detection, evaluation, and proposal rules
+│  │  └─ agent-orchestration.md   # Multi-agent lifecycle, state contracts, workflow pipeline
+│  ├─ agents/                     # Multi-agent team definitions (human-created directory)
+│  │  ├─ team.yaml                # Team composition, scaling rules, workflow pipeline
+│  │  ├─ orchestrator.yaml        # Coordinator agent (main instance)
+│  │  ├─ implementer.yaml         # Code writing agent (scalable, max 3)
+│  │  ├─ reviewer.yaml            # Code review agent (read-only)
+│  │  ├─ security-auditor.yaml    # Security audit agent
+│  │  ├─ verifier.yaml            # Test/lint/build agent (scalable, max 2)
+│  │  ├─ refactorer.yaml          # On-demand refactoring agent
+│  │  └─ reporter.yaml            # Dashboard update agent (trigger-based)
+│  ├─ state/                      # Execution state (runtime, not governance)
+│  │  ├─ HANDOVER.md              # Session handover document
+│  │  └─ kickoff.json             # Kickoff progress tracking
+│  └─ tasks/                      # Task definitions for execution
 │
 ├─ scripts/                       # Helper scripts for setup and automation
-│  └─ setup.mjs                   # Interactive setup reflecting human decisions only
+│  ├─ setup.mjs                   # Interactive setup reflecting human decisions only
+│  ├─ teardown.mjs                # Stop dev server, clean DB and generated files
+│  └─ generate-placeholders.mjs   # SVG placeholder image generator
 │
+├─ public/                        # Static assets (placeholder images, etc.)
 ├─ idea-discovery.txt             # Generic Idea Discovery prompt (human + any AI assistant)
 ├─ CLAUDE.md                      # Global, always-on rules for Claude Code
 ├─ README.md                      # Human-oriented documentation and usage guide
+├─ dashboard.md                   # Human-readable execution visibility dashboard
 ├─ project.config.json            # Explicit technical decisions selected by humans
 ├─ package.json                   # Node.js project metadata and scripts
 └─ LICENSE                        # Repository license information
