@@ -9,6 +9,7 @@ responsibilities:
   - Run test suites via configured test tool
   - Run linting via configured lint tool
   - Run build to verify compilation
+  - Verify proxy configuration matches devPorts in project.config.json
   - Report pass/fail results via result files
 authority:
   writable_paths:
@@ -42,6 +43,7 @@ context_requirements:
   - "project.config.json"
   - "Review and audit results"
   - "Source files to verify"
+  - ".claude/rules/dev-server-proxy.md"
 handoff: []
 tags:
   - testing

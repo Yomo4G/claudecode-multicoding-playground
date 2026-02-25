@@ -23,7 +23,7 @@ of the following are true:
 
 ## Roles
 
-The system defines 7 agent roles:
+The system defines 8 agent roles:
 
 | Role | Description |
 |------|-------------|
@@ -31,6 +31,7 @@ The system defines 7 agent roles:
 | implementer | Writes product code after approval |
 | reviewer | Reviews code for quality and architecture |
 | security-auditor | Audits code and dependencies for security issues |
+| e2e-tester | Runs end-to-end integration tests after implementation |
 | verifier | Runs tests, lint, and build checks |
 | refactorer | Simplifies and improves code structure |
 | reporter | Updates dashboard.md with execution state |
@@ -50,6 +51,7 @@ Responsibilities:
 - Enforce workflow pipeline ordering
 - Make scaling decisions based on defined criteria
 - Terminate agents when work is complete
+- Manage shared contract lifecycle per shared-contracts rule
 
 Prohibitions:
 - The orchestrator must NOT write product code directly
@@ -182,17 +184,64 @@ The reporter updates:
 - Skill Candidates section
 - Notes section
 
+### Reporter Triggers
+
+The orchestrator fires the reporter on these events:
+
+| Trigger | When it fires |
+|---------|---------------|
+| task-started | A task is assigned to an agent |
+| task-completed | An agent reports task completion |
+| agent-error | An agent enters error status |
+| phase-transition | A task moves to the next pipeline stage |
+| scaling-event | An agent instance is scaled up or down |
+| session-resume | The orchestrator resumes from a paused session |
+| pre-handover | Before generating the handover document |
+| periodic | Every 3 completed tasks |
+
 ## Workflow Pipeline
 
 The default task workflow is:
 
-    implementer → [reviewer, security-auditor] → verifier
+    implementer → e2e-tester → [reviewer, security-auditor] → verifier
 
 Rules:
-- Review and security audit run in parallel after implementation
+- E2e testing runs immediately after implementation
+- Review and security audit run in parallel after e2e passes
 - Verification runs only after both review and audit pass
 - If review or audit raises issues, the task returns to implementer
 - The refactorer may be inserted before verifier when requested
+
+### E2e Feedback Loop
+
+When the e2e-tester reports failure:
+
+1. The orchestrator creates a fix subtask
+   from the failure description
+2. The fix subtask is assigned to the implementer
+3. After the implementer completes the fix,
+   the e2e-tester runs again
+4. Maximum 3 retries per task
+5. After 3 failures, the task is blocked
+   and human intervention is requested
+
+## Contract-First Pipeline Extension
+
+When tasks have shared contracts
+(as defined in `.claude/rules/shared-contracts.md`),
+the pipeline is extended:
+
+    contract-define → implement (parallel) → e2e-test → [review, security-auditor] → verifier
+
+Rules:
+- The contract-define step runs before parallel implementation
+- Only the producing task's implementer defines the contract
+- Consuming tasks cannot enter the implement stage
+  until their required contracts are defined
+  in the producer task's definition file
+- The orchestrator writes contract content
+  into task definition files after receiving
+  the implementer's result
 
 ## Scaling Decisions
 
@@ -250,6 +299,10 @@ When `/yoroshiku` grants GO and `.claude/agents/` exists:
 5. Create `.claude/state/skill-candidates/` directory if needed
 6. Spawn agents with `min > 0` in the team configuration
 7. Update `dashboard.md` Agent Status table via reporter
+8. If resuming from a previous session
+   (HANDOVER.md or state files exist),
+   fire `session-resume` trigger for the reporter
+   to sync dashboard with current state
 
 ### `/handover`
 
@@ -260,6 +313,18 @@ Before generating the handover document:
 3. Terminate all agent instances
 4. Run reporter for final dashboard update
 5. Include agent summary in handover document
+
+### `/retro`
+
+When `/retro` is invoked:
+
+1. Read all agent result files from `.claude/state/agent-results/`
+2. Read all agent status files from `.claude/state/agent-status/`
+3. Read task definitions from `.claude/tasks/`
+4. Analyze rework patterns across all categories
+5. Generate rules (with human approval) and skills (auto-approved)
+6. Generate retro report to `.claude/state/retro-report.md`
+7. Fire `retro-completed` trigger for the reporter
 
 ## Skill Lifecycle Integration
 

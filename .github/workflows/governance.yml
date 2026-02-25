@@ -1,0 +1,207 @@
+name: Governance Validation
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  yaml-validation:
+    name: Validate Agent YAML
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq \
+            https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Validate agent YAML syntax
+        run: |
+          errors=0
+          for f in .claude/agents/*.yaml; do
+            if ! yq eval '.' "$f" > /dev/null 2>&1; then
+              echo "::error file=${f}::Invalid YAML syntax in ${f}"
+              errors=$((errors + 1))
+            fi
+          done
+          if [ "$errors" -gt 0 ]; then
+            echo "::error::${errors} YAML file(s) have syntax errors"
+            exit 1
+          fi
+          echo "All agent YAML files are valid"
+
+      - name: Check team.yaml agent references
+        run: |
+          errors=0
+          for agent in $(yq eval '.agents[].name' .claude/agents/team.yaml); do
+            if [ ! -f ".claude/agents/${agent}.yaml" ]; then
+              echo "::error::Agent '${agent}' referenced in team.yaml but .claude/agents/${agent}.yaml not found"
+              errors=$((errors + 1))
+            fi
+          done
+          if [ "$errors" -gt 0 ]; then
+            echo "::error::${errors} agent reference(s) are broken"
+            exit 1
+          fi
+          echo "All agent references in team.yaml are valid"
+
+  skill-validation:
+    name: Validate Skills
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check skills directory
+        id: check-skills
+        run: |
+          if [ -d ".claude/skills" ] && [ -n "$(ls -d .claude/skills/*/ 2>/dev/null)" ]; then
+            echo "has_skills=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_skills=false" >> "$GITHUB_OUTPUT"
+            echo "No skills directory or no skills found. Skipping."
+          fi
+
+      - name: Validate SKILL.md format
+        if: steps.check-skills.outputs.has_skills == 'true'
+        run: |
+          errors=0
+          for skill_dir in .claude/skills/*/; do
+            skill_name=$(basename "$skill_dir")
+            skill_file="${skill_dir}SKILL.md"
+
+            # SKILL.md must exist
+            if [ ! -f "$skill_file" ]; then
+              echo "::error::Missing SKILL.md in ${skill_dir}"
+              errors=$((errors + 1))
+              continue
+            fi
+
+            # Extract frontmatter
+            frontmatter=$(sed -n '/^---$/,/^---$/p' "$skill_file")
+
+            # Required frontmatter fields
+            if ! echo "$frontmatter" | grep -q '^name:'; then
+              echo "::error file=${skill_file}::Missing 'name' in frontmatter"
+              errors=$((errors + 1))
+            fi
+            if ! echo "$frontmatter" | grep -q '^description:'; then
+              echo "::error file=${skill_file}::Missing 'description' in frontmatter"
+              errors=$((errors + 1))
+            fi
+
+            # Directory name must match frontmatter name
+            fm_name=$(echo "$frontmatter" | grep '^name:' | sed 's/^name:[[:space:]]*//')
+            if [ -n "$fm_name" ] && [ "$fm_name" != "$skill_name" ]; then
+              echo "::error file=${skill_file}::Frontmatter name '${fm_name}' does not match directory name '${skill_name}'"
+              errors=$((errors + 1))
+            fi
+
+            # Required sections
+            if ! grep -q '## Triggers' "$skill_file"; then
+              echo "::error file=${skill_file}::Missing '## Triggers' section"
+              errors=$((errors + 1))
+            fi
+            if ! grep -q '## Steps' "$skill_file"; then
+              echo "::error file=${skill_file}::Missing '## Steps' section"
+              errors=$((errors + 1))
+            fi
+            if ! grep -q '## Tags' "$skill_file"; then
+              echo "::error file=${skill_file}::Missing '## Tags' section"
+              errors=$((errors + 1))
+            fi
+
+            # Steps must have at least 3 items
+            step_count=$(grep -c '^[0-9]\+\.' "$skill_file" || true)
+            if [ "$step_count" -lt 3 ]; then
+              echo "::error file=${skill_file}::Must have at least 3 steps (found ${step_count})"
+              errors=$((errors + 1))
+            fi
+          done
+
+          if [ "$errors" -gt 0 ]; then
+            echo "::error::${errors} skill validation error(s) found"
+            exit 1
+          fi
+          echo "All skills are valid"
+
+  command-validation:
+    name: Validate Commands
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check commands directory
+        id: check-commands
+        run: |
+          if [ -d ".claude/commands" ] && [ -n "$(ls .claude/commands/*.md 2>/dev/null)" ]; then
+            echo "has_commands=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_commands=false" >> "$GITHUB_OUTPUT"
+            echo "No commands found. Skipping."
+          fi
+
+      - name: Validate command files are non-empty
+        if: steps.check-commands.outputs.has_commands == 'true'
+        run: |
+          errors=0
+          for cmd in .claude/commands/*.md; do
+            if [ ! -s "$cmd" ]; then
+              echo "::error file=${cmd}::Command file is empty"
+              errors=$((errors + 1))
+            fi
+          done
+          if [ "$errors" -gt 0 ]; then
+            echo "::error::${errors} empty command file(s) found"
+            exit 1
+          fi
+          echo "All command files are valid"
+
+  protected-files:
+    name: Protected File Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check protected file modifications
+        run: |
+          PROTECTED_PATTERNS=(
+            "^CLAUDE\.md$"
+            "^project\.config\.json$"
+            "^\.claude/rules/"
+            "^\.claude/agents/"
+            "^\.claude/commands/"
+            "^\.claude/contexts/"
+            "^\.claude/project-framing\.md$"
+            "^scripts/"
+            "^README\.md$"
+          )
+
+          changed=$(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}")
+          warnings=0
+
+          for pattern in "${PROTECTED_PATTERNS[@]}"; do
+            matches=$(echo "$changed" | grep -E "$pattern" || true)
+            if [ -n "$matches" ]; then
+              while IFS= read -r file; do
+                echo "::warning file=${file}::Protected file modified: ${file}"
+                warnings=$((warnings + 1))
+              done <<< "$matches"
+            fi
+          done
+
+          if [ "$warnings" -gt 0 ]; then
+            echo ""
+            echo "::warning::${warnings} protected file(s) modified in this PR. Human review required."
+            echo ""
+            echo "Protected files are governed by execution-permissions.md."
+            echo "Changes to these files should be intentional and reviewed carefully."
+          else
+            echo "No protected files modified."
+          fi

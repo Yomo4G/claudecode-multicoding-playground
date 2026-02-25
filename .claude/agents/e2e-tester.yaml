@@ -1,0 +1,51 @@
+kind: agent
+name: e2e-tester
+version: 1
+role: e2e-tester
+description: |
+  Runs end-to-end integration tests after implementation
+  to verify the system works from a user perspective.
+  Reports failures as fix tasks for the orchestrator.
+responsibilities:
+  - Run e2e test suites against the running dev server
+  - Verify that implemented features work end-to-end
+  - Report test results via state files
+  - If tests fail, describe failures in result file
+    for orchestrator to create fix tasks
+authority:
+  writable_paths:
+    - ".claude/state/agent-status/**"
+    - ".claude/state/agent-results/**"
+  permitted_commands:
+    - "pnpm test:e2e"
+    - "pnpm test:integration"
+constraints:
+  - Must not modify product code
+  - Must not modify governance files
+  - Must not modify dashboard.md
+  - Requires dev server to be running before execution
+activation:
+  mode: persistent
+  prerequisites:
+    - "Orchestrator has spawned this agent"
+    - "Implementation task completed"
+    - "Dev server is running"
+  trigger: []
+scaling:
+  min: 1
+  max: 1
+  condition: |
+    Always one instance.
+    E2e tests are run sequentially.
+skill_detection: false
+subagent_type: general-purpose
+context_requirements:
+  - "project.config.json"
+  - "Implementation results"
+  - "Task definition (including shared contracts if any)"
+  - ".claude/rules/integration-verification.md"
+handoff: []
+tags:
+  - testing
+  - integration
+  - e2e

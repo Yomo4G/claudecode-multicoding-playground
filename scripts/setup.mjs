@@ -83,6 +83,7 @@ const DEFAULT_CONFIG = {
   backend: null,
   backendFramework: null,
   database: null,
+  devPorts: null,
   designMethod: null,
   designReference: null,
   breakpoints: null,
@@ -114,8 +115,8 @@ function validate(cfg) {
     if (!(key in cfg)) throw new Error(`Missing key: ${key}`);
     const v = cfg[key];
     if (v === null) continue;
-    if (key === "breakpoints") {
-      if (!isObject(v)) throw new Error("breakpoints must be an object");
+    if (key === "breakpoints" || key === "devPorts") {
+      if (!isObject(v)) throw new Error(`${key} must be an object`);
       continue;
     }
     if (!ALLOWED[key].includes(v)) {
@@ -195,6 +196,7 @@ async function main() {
       cfg.backend = null;
       cfg.backendFramework = null;
       cfg.database = null;
+      cfg.devPorts = null;
       // Reset design fields
       cfg.designMethod = null;
       cfg.designReference = null;
@@ -228,11 +230,13 @@ async function main() {
       cfg.backend = "api-routes";
       cfg.backendFramework = null;
       cfg.database = "sqlite";
+      cfg.devPorts = { app: 3000 };
     } else {
       cfg.projectStructure = "monorepo";
       cfg.backend = "separate";
       cfg.backendFramework = "hono";
       cfg.database = "sqlite";
+      cfg.devPorts = { frontend: 5173, backend: 3000 };
     }
 
     console.log(`\n📐 Project structure: ${cfg.projectStructure}`);

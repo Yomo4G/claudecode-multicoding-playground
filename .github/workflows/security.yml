@@ -1,0 +1,115 @@
+name: Security
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+  schedule:
+    - cron: "0 9 * * 1" # Weekly on Monday 09:00 UTC
+
+jobs:
+  secret-detection:
+    name: Secret Detection
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for .env files
+        run: |
+          env_files=$(find . -name ".env" -o -name ".env.*" \
+            | grep -v node_modules \
+            | grep -v ".env.example" \
+            | grep -v ".env.sample" || true)
+          if [ -n "$env_files" ]; then
+            echo "::error::Potential credential files found in repository:"
+            echo "$env_files"
+            echo ""
+            echo "These files should be in .gitignore and not committed."
+            exit 1
+          fi
+          echo "No .env files found in repository"
+
+      - name: Check for common secret patterns
+        run: |
+          errors=0
+
+          # Patterns that indicate hardcoded secrets
+          PATTERNS=(
+            'PRIVATE.KEY'
+            'BEGIN RSA PRIVATE KEY'
+            'BEGIN DSA PRIVATE KEY'
+            'BEGIN EC PRIVATE KEY'
+            'BEGIN OPENSSH PRIVATE KEY'
+          )
+
+          for pattern in "${PATTERNS[@]}"; do
+            matches=$(grep -r --include="*.ts" --include="*.tsx" \
+              --include="*.js" --include="*.jsx" \
+              --include="*.json" --include="*.yaml" --include="*.yml" \
+              -l "$pattern" . 2>/dev/null \
+              | grep -v node_modules \
+              | grep -v pnpm-lock.yaml \
+              | grep -v '.github/workflows/' || true)
+            if [ -n "$matches" ]; then
+              echo "::error::Potential secret pattern '${pattern}' found in:"
+              echo "$matches"
+              errors=$((errors + 1))
+            fi
+          done
+
+          # Check for API key patterns in source code
+          api_key_matches=$(grep -rn --include="*.ts" --include="*.tsx" \
+            --include="*.js" --include="*.jsx" \
+            -E '(api[_-]?key|api[_-]?secret|auth[_-]?token)\s*[:=]\s*["\x27][A-Za-z0-9]{20,}' \
+            . 2>/dev/null \
+            | grep -v node_modules \
+            | grep -v '.github/workflows/' || true)
+          if [ -n "$api_key_matches" ]; then
+            echo "::error::Potential hardcoded API keys found:"
+            echo "$api_key_matches"
+            errors=$((errors + 1))
+          fi
+
+          if [ "$errors" -gt 0 ]; then
+            echo "::error::${errors} potential secret(s) detected"
+            exit 1
+          fi
+          echo "No secret patterns detected"
+
+  dependency-audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check preconditions
+        id: check
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "No pnpm-lock.yaml found. Skipping dependency audit."
+          fi
+
+      - name: Setup pnpm
+        if: steps.check.outputs.should_run == 'true'
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        if: steps.check.outputs.should_run == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        if: steps.check.outputs.should_run == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Run pnpm audit
+        if: steps.check.outputs.should_run == 'true'
+        run: pnpm audit --audit-level=high

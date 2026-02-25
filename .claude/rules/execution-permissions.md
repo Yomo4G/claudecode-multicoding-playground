@@ -24,6 +24,7 @@ under the following paths:
 - `package.json`
 - `pnpm-lock.yaml`
 - `pnpm-workspace.yaml`
+- `.github/workflows/**`
 
 All other paths are protected.
 Any modification outside these paths requires explicit human approval.
@@ -79,9 +80,24 @@ The following are explicitly allowed during execution:
 - `pnpm placeholders` (generate placeholder images)
 - File creation, modification, and deletion within writable paths
 
+## Command-Specific Exceptions
+
+### /retro
+
+During `/retro` command execution, the following
+additional write permissions apply:
+
+- `.claude/rules/retro-*.md` may be created
+  (with human approval per file)
+- `.claude/state/retro-report.md` may be created or overwritten
+
+These permissions are ONLY active during `/retro` execution.
+They do not apply during normal task execution.
+
 ## Enforcement
 
-- This rule has no exceptions during autonomous execution.
+- This rule has no exceptions during autonomous execution,
+  except for command-specific exceptions defined above.
 - If a task requires a prohibited action,
   Claude Code must stop and request human approval.
 - Violations of this rule are treated as execution failures.

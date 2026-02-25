@@ -29,9 +29,11 @@ activation:
     - "Orchestrator has spawned this agent"
   trigger:
     - task-completed
+    - task-started
     - agent-error
     - phase-transition
     - scaling-event
+    - session-resume
     - pre-handover
     - "periodic: every 3 tasks"
 scaling:

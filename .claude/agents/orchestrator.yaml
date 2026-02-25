@@ -14,11 +14,13 @@ responsibilities:
   - Enforce workflow pipeline ordering
   - Make scaling decisions
   - Handle agent errors and timeouts
+  - Manage shared contract lifecycle (define, distribute, coordinate changes)
 authority:
   writable_paths:
     - ".claude/state/agent-status/**"
     - ".claude/state/agent-results/**"
     - ".claude/state/skill-candidates/**"
+    - ".claude/tasks/**"
   permitted_commands:
     - "pnpm install"
     - "pnpm add"
@@ -27,6 +29,7 @@ constraints:
   - Must not bypass workflow pipeline
   - Must not spawn agents not defined in team.yaml
   - Must not modify agent definition files
+  - Must not assign consuming tasks until required contract content is defined
 activation:
   mode: persistent
   prerequisites:
@@ -46,6 +49,7 @@ context_requirements:
   - "project.config.json"
   - ".claude/agents/team.yaml"
   - "dashboard.md"
+  - ".claude/rules/shared-contracts.md"
 handoff: []
 tags:
   - coordination
