@@ -49,8 +49,8 @@ Renaming both the repository and local directory to match
 your product name is recommended.
 
 ```bash
-git clone https://github.com/your-account/ai-multicoding-playground.git
-mv ai-multicoding-playground your-product-name
+git clone https://github.com/your-account/claudecode-multicoding-playground.git
+mv claudecode-multicoding-playground your-product-name
 cd your-product-name
 ```
 

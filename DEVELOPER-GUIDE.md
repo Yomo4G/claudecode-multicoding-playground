@@ -10,7 +10,7 @@ For getting started, see [README.md](README.md).
 ## Repository Structure
 
 ```
-/ai-multicoding-playground
+/claudecode-multicoding-playground
 ├─ .github/
 │  └─ workflows/                  # CI workflows (lifecycle-aware)
 │     ├─ governance.yml           # Phase 1: YAML, skill, protected file checks

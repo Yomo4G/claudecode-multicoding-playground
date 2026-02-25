@@ -2,7 +2,7 @@
 
 ## Session Summary
 
-- Goal: Improve the ai-multicoding-playground template with new features and governance enhancements
+- Goal: Improve the claudecode-multicoding-playground template with new features and governance enhancements
 - Accomplished:
   - Added Claude Code context file generation instructions to `idea-discovery.txt`
   - Added Boundary Conditions to context definition common outputs
