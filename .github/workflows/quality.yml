@@ -1,0 +1,192 @@
+name: Code Quality
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "src/**"
+      - "frontend/**"
+      - "backend/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  check-preconditions:
+    name: Check Preconditions
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+      has_lint: ${{ steps.config.outputs.has_lint }}
+      has_test: ${{ steps.config.outputs.has_test }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check if product code exists
+        id: check
+        run: |
+          if [ -f pnpm-lock.yaml ] && { [ -d src ] || [ -d frontend ]; }; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+            echo "Product code and lockfile found. Running quality checks."
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "No product code or lockfile. Skipping quality checks."
+          fi
+
+      - name: Read project config
+        id: config
+        run: |
+          lint=$(jq -r '.lint // empty' project.config.json)
+          test=$(jq -r '.test // empty' project.config.json)
+
+          if [ -n "$lint" ]; then
+            echo "has_lint=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_lint=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [ -n "$test" ]; then
+            echo "has_test=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_test=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  install:
+    name: Install Dependencies
+    needs: check-preconditions
+    if: needs.check-preconditions.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Cache node_modules
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            node_modules
+            frontend/node_modules
+            backend/node_modules
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml') }}
+
+  typecheck:
+    name: Type Check
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            frontend/node_modules
+            backend/node_modules
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Run type check
+        run: pnpm exec tsc --noEmit
+
+  lint:
+    name: Lint
+    needs: [check-preconditions, install]
+    if: needs.check-preconditions.outputs.has_lint == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            frontend/node_modules
+            backend/node_modules
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Run lint
+        run: pnpm lint
+
+  build:
+    name: Build
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            frontend/node_modules
+            backend/node_modules
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Run build
+        run: pnpm build
+
+  test:
+    name: Test
+    needs: [check-preconditions, install]
+    if: needs.check-preconditions.outputs.has_test == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            frontend/node_modules
+            backend/node_modules
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Run tests
+        run: pnpm test

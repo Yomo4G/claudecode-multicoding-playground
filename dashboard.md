@@ -11,6 +11,7 @@ When updating this file, AI agents must follow these rules:
   - Agent Status
   - Tasks Overview
   - Skill Candidates
+  - Retrospective
   - Notes (optional)
 - Do not add or remove sections.
 - When multi-agent orchestration is active,
@@ -99,6 +100,19 @@ See `.claude/rules/skill-lifecycle.md` for evaluation criteria.
 ### Candidate Details
 
 (No candidates recorded yet.)
+
+---
+
+## Retrospective
+
+Last run: —
+
+| Category | Count | Tasks |
+|----------|-------|-------|
+| — | — | — |
+
+Rules generated: 0
+Skills generated: 0
 
 ---
 

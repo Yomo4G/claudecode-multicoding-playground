@@ -1,0 +1,147 @@
+name: Config Validation
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "project.config.json"
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  check-preconditions:
+    name: Check Preconditions
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check if project is configured
+        id: check
+        run: |
+          framework=$(jq -r '.framework // empty' project.config.json)
+          if [ -n "$framework" ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+            echo "Framework configured: ${framework}"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "project.config.json framework is null. Skipping validation."
+          fi
+
+  validate-config:
+    name: Validate Configuration
+    needs: check-preconditions
+    if: needs.check-preconditions.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate framework value
+        run: |
+          framework=$(jq -r '.framework' project.config.json)
+          ALLOWED=("react" "vue" "next" "nuxt" "astro" "gatsby")
+
+          valid=false
+          for f in "${ALLOWED[@]}"; do
+            if [ "$framework" = "$f" ]; then
+              valid=true
+              break
+            fi
+          done
+
+          if [ "$valid" = false ]; then
+            echo "::error::Invalid framework value: '${framework}'. Allowed: ${ALLOWED[*]}"
+            exit 1
+          fi
+          echo "Framework: ${framework} (valid)"
+
+      - name: Validate derived settings consistency
+        run: |
+          framework=$(jq -r '.framework' project.config.json)
+          structure=$(jq -r '.projectStructure // empty' project.config.json)
+          backend=$(jq -r '.backend // empty' project.config.json)
+          backend_fw=$(jq -r '.backendFramework // empty' project.config.json)
+
+          errors=0
+
+          # Full-stack frameworks must be single structure
+          if [ "$framework" = "next" ] || [ "$framework" = "nuxt" ]; then
+            if [ -n "$structure" ] && [ "$structure" != "single" ]; then
+              echo "::error::Framework '${framework}' requires projectStructure 'single', got '${structure}'"
+              errors=$((errors + 1))
+            fi
+            if [ -n "$backend" ] && [ "$backend" != "built-in" ]; then
+              echo "::error::Framework '${framework}' requires backend 'built-in', got '${backend}'"
+              errors=$((errors + 1))
+            fi
+          fi
+
+          # SPA frameworks must be monorepo structure
+          if [ "$framework" = "react" ] || [ "$framework" = "vue" ] || \
+             [ "$framework" = "astro" ] || [ "$framework" = "gatsby" ]; then
+            if [ -n "$structure" ] && [ "$structure" != "monorepo" ]; then
+              echo "::error::Framework '${framework}' requires projectStructure 'monorepo', got '${structure}'"
+              errors=$((errors + 1))
+            fi
+            if [ -n "$backend_fw" ] && [ "$backend_fw" != "hono" ]; then
+              echo "::error::Framework '${framework}' requires backendFramework 'hono', got '${backend_fw}'"
+              errors=$((errors + 1))
+            fi
+          fi
+
+          if [ "$errors" -gt 0 ]; then
+            echo "::error::${errors} configuration consistency error(s)"
+            exit 1
+          fi
+          echo "Derived settings are consistent"
+
+      - name: Validate lint setting
+        run: |
+          lint=$(jq -r '.lint // empty' project.config.json)
+          if [ -n "$lint" ]; then
+            ALLOWED=("biome" "eslint" "prettier")
+            valid=false
+            for l in "${ALLOWED[@]}"; do
+              if [ "$lint" = "$l" ]; then
+                valid=true
+                break
+              fi
+            done
+            if [ "$valid" = false ]; then
+              echo "::error::Invalid lint value: '${lint}'. Allowed: ${ALLOWED[*]}"
+              exit 1
+            fi
+            echo "Lint: ${lint} (valid)"
+          else
+            echo "Lint not configured yet"
+          fi
+
+      - name: Validate test setting
+        run: |
+          test=$(jq -r '.test // empty' project.config.json)
+          if [ -n "$test" ]; then
+            ALLOWED=("playwright" "vitest" "jest" "cypress")
+            valid=false
+            for t in "${ALLOWED[@]}"; do
+              if [ "$test" = "$t" ]; then
+                valid=true
+                break
+              fi
+            done
+            if [ "$valid" = false ]; then
+              echo "::error::Invalid test value: '${test}'. Allowed: ${ALLOWED[*]}"
+              exit 1
+            fi
+            echo "Test: ${test} (valid)"
+          else
+            echo "Test not configured yet"
+          fi
+
+      - name: Check lockfile existence
+        run: |
+          if [ ! -f pnpm-lock.yaml ]; then
+            echo "::warning::pnpm-lock.yaml not found. Dependencies may not be locked (OWASP A08)."
+          else
+            echo "Lockfile present"
+          fi

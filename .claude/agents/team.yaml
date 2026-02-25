@@ -14,6 +14,9 @@ agents:
   - name: security-auditor
     min: 1
     max: 1
+  - name: e2e-tester
+    min: 1
+    max: 1
   - name: verifier
     min: 1
     max: 2
@@ -45,6 +48,8 @@ workflow:
   default_pipeline:
     - stage: implement
       agent: implementer
+    - stage: e2e-test
+      agent: e2e-tester
     - stage: review
       agents:
         - reviewer
@@ -56,9 +61,12 @@ workflow:
 reporter:
   trigger_events:
     - task-completed
+    - task-started
     - agent-error
     - phase-transition
     - scaling-event
+    - session-resume
     - pre-handover
+    - retro-completed
   periodic:
     every_n_tasks: 3

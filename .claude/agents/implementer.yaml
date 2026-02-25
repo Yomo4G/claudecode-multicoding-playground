@@ -50,6 +50,8 @@ subagent_type: general-purpose
 context_requirements:
   - "project.config.json"
   - "Assigned task definition"
+  - ".claude/rules/dev-server-proxy.md"
+  - ".claude/rules/owasp-security.md"
 handoff:
   - reviewer
   - security-auditor

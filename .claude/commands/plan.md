@@ -95,6 +95,15 @@ but all items must be explicitly reviewed.
 - [ ] Each task explicitly states whether it can be executed in parallel
       or must be executed sequentially.
 - [ ] The set of tasks that can be started first is clearly identified.
+- [ ] For each pair of tasks that can run in parallel:
+      shared technical interfaces (API endpoints, types, schemas)
+      are identified.
+- [ ] Each shared interface has a designated producer task
+      and one or more consumer tasks.
+- [ ] Producer task definitions include
+      a `## Shared Contracts (Producer)` placeholder section.
+- [ ] Consumer task definitions include
+      a `## Shared Contracts (Consumer)` reference section.
 
 ### PF-5: Human GO Responsibility
 

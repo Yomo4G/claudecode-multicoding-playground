@@ -16,6 +16,8 @@ responsibilities:
   - Perform framework-specific security checks
   - Check configuration security (.env exposure, CSP, HTTPS)
   - Report findings via result files
+  - Verify OWASP Top 10 compliance using checklist
+  - Report owasp_coverage in result files
 authority:
   writable_paths:
     - ".claude/state/agent-status/**"
@@ -46,6 +48,7 @@ context_requirements:
   - "Implementation result from implementer"
   - "Source files under audit"
   - "package.json for dependency analysis"
+  - ".claude/rules/owasp-security.md"
 handoff: []
 tags:
   - security

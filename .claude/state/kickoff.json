@@ -1,1 +1,113 @@
-{}
+{
+  "language": "ja",
+  "phase": "project-framing",
+  "entries": [
+    {
+      "action": "language_selected",
+      "value": "ja",
+      "timestamp": "2026-02-03"
+    },
+    {
+      "action": "file_generated",
+      "path": ".claude/contexts/domain-model.md",
+      "summary": "ドメインモデル定義: 手書き・投稿・消滅・場の4概念とその関係を定義。痕跡は存在しない。場は1つのみ。",
+      "timestamp": "2026-02-09"
+    },
+    {
+      "action": "file_generated",
+      "path": ".claude/contexts/actors.md",
+      "summary": "アクター定義: 利用者（書く人と読む人は同一、いいね・返信・招待・通報が可能）と運営者（技術維持管理+モデレーション）の2アクター。",
+      "timestamp": "2026-02-09"
+    },
+    {
+      "action": "file_generated",
+      "path": ".claude/contexts/actions.md",
+      "summary": "アクション定義: 利用者9アクション（投稿・眺める・いいね・返信・招待・通報・ミュート・自己削除・退会）、運営者3アクション（削除・停止・維持管理）。消滅ルール（14日寿命、返信による延命、チェーン途中消滅時の挙動）を定義。",
+      "timestamp": "2026-02-09"
+    },
+    {
+      "action": "file_generated",
+      "path": ".claude/contexts/boundary-conditions.md",
+      "summary": "境界条件定義: 責任境界（撮影から開始、論理削除+物理削除可能構造）、介入境界（法令違反・暴力・個人情報・スパム・bot・手書き判定false時は投稿不可・運営者巡回あり）、関係性境界（アカウント名・アイコン・14日以内の投稿が可視、いいね数は全員に可視）。",
+      "timestamp": "2026-02-09"
+    },
+    {
+      "action": "file_generated",
+      "path": ".claude/contexts/lifecycle.md",
+      "summary": "ライフサイクル定義（Project-Specific Output）: 投稿の5フェーズ（作成→存在→延命→消滅→消滅後）。作成時にプレビュー確認あり、事前モデレーションなし、カメラロール保存はデフォルトoff。消滅4種類（自動・自己削除・運営者削除・退会）。論理削除+物理削除可能構造。従属関係の消滅ルール。",
+      "timestamp": "2026-02-09"
+    },
+    {
+      "action": "file_generated",
+      "path": ".claude/contexts/notification-policy.md",
+      "summary": "通知方針定義（Project-Specific Output）: 初期段階では通知機能を一切実装しない。いいね・返信・通報処理の通知はすべて無効。将来的に追加実装予定（時期・形式未定）。通知の不在は意図的な設計。",
+      "timestamp": "2026-02-09"
+    },
+    {
+      "action": "file_updated",
+      "path": ".claude/contexts/actors.md",
+      "summary": "招待アクションを削除（初期段階では実装しない、将来追加予定）。",
+      "timestamp": "2026-02-09"
+    },
+    {
+      "action": "file_updated",
+      "path": ".claude/contexts/actions.md",
+      "summary": "招待アクションを削除（初期段階では実装しない、将来追加予定）。利用者アクションは8に変更。",
+      "timestamp": "2026-02-09"
+    },
+    {
+      "action": "file_generated",
+      "path": ".claude/contexts/registration-policy.md",
+      "summary": "参加方法定義（Project-Specific Output）: オープン登録（誰でも可）。必要情報はメールアドレス・パスワード・アカウント名。メール認証あり。アイコンは必須ではない。ソーシャルログインは初期段階では非対応（将来追加予定）。",
+      "timestamp": "2026-02-09"
+    },
+    {
+      "action": "file_generated",
+      "path": ".claude/rules/testing.md",
+      "summary": "テストルール: ユニットテスト必須、E2Eは任意（完成後に作成）、カバレッジ数値目標なし、テスト未通過タスクは完了不可。",
+      "timestamp": "2026-02-09"
+    },
+    {
+      "action": "file_generated",
+      "path": ".claude/rules/done-definition.md",
+      "summary": "Done定義ルール: Done基準必須、部分完了不可、AIが判定。最低条件はDone基準充足+ユニットテスト通過+コードレビュー完了。",
+      "timestamp": "2026-02-09"
+    },
+    {
+      "action": "file_generated",
+      "path": ".claude/rules/scope-documentation.md",
+      "summary": "スコープ文書化ルール: スコープ・非スコープの文書化必須、AIが提案し人間が承認。スコープ外作業は新タスクとして切り出し現タスクは続行。",
+      "timestamp": "2026-02-09"
+    },
+    {
+      "action": "file_generated",
+      "path": ".claude/rules/failure-handling.md",
+      "summary": "失敗・中断対応ルール: AIが自力リトライ後に解決不能なら人間に報告。コンテキスト修正はAI提案+人間承認。ブロック時は並列タスクへのスキップ可、直列タスクは不可。",
+      "timestamp": "2026-02-09"
+    },
+    {
+      "action": "file_generated",
+      "path": ".claude/tasks/phase1-foundation.md",
+      "summary": "Phase 1 タスク定義: T1(Scaffolding), T2(OpenAPI), T3(API実装), T4(Base UI)。Done基準・スコープ・非スコープ・依存関係を定義。",
+      "timestamp": "2026-02-09"
+    },
+    {
+      "action": "file_generated",
+      "path": ".claude/tasks/phase2-core.md",
+      "summary": "Phase 2 タスク定義: T5(認証), T6(投稿作成), T7(場/フィード)。Done基準・スコープ・非スコープ・依存関係を定義。",
+      "timestamp": "2026-02-09"
+    },
+    {
+      "action": "file_generated",
+      "path": ".claude/tasks/phase3-interaction.md",
+      "summary": "Phase 3 タスク定義: T8(いいね), T9(返信), T10(プロフィール), T11(ミュート), T12(投稿管理)。Done基準・スコープ・非スコープ・依存関係を定義。",
+      "timestamp": "2026-02-09"
+    },
+    {
+      "action": "file_generated",
+      "path": ".claude/tasks/phase4-system.md",
+      "summary": "Phase 4 タスク定義: T13(自動消滅), T14(モデレーション), T15(退会)。Done基準・スコープ・非スコープ・依存関係を定義。",
+      "timestamp": "2026-02-09"
+    }
+  ]
+}

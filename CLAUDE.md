@@ -204,7 +204,7 @@ Rules:
   not proposed immediately.
 - Batch proposal happens only at end-of-development
   (before `/handover` or on explicit request).
-- The AI must NEVER generate a skill YAML file
+- The AI must NEVER generate a skill directory or SKILL.md
   without human approval.
 - The AI must NEVER skip any evaluation stage.
 
@@ -382,7 +382,7 @@ from the previous session.
 Do not ask whether to read it. Read it automatically.
 
 Additionally, check if `.claude/skills/` directory exists.
-If it exists, read all YAML files and load them
+If it exists, read all SKILL.md files under `.claude/skills/*/` and load them
 as reusable skill definitions for the current session.
 If it does not exist, the Skill Proposal Lifecycle is disabled.
 Do not propose, record, or generate skills.
