@@ -1,3 +1,9 @@
+---
+name: retro
+description: "AI self-reflection on execution session. Analyzes rework patterns and proposes rules. Use after task execution to identify rework patterns and generate prevention measures."
+disable-model-invocation: true
+---
+
 # /retro
 
 This command performs AI self-reflection on the execution session
@@ -7,21 +13,18 @@ to identify rework patterns and generate actionable improvements.
 
 `/retro` transforms execution data into governance artifacts.
 It analyzes rework patterns from agent result files
-and generates rules and skills to prevent recurrence.
+and generates rules to prevent recurrence.
 
-## Difference from /handover and Skill Lifecycle
+## Difference from Skill Lifecycle
 
-- `/handover` records facts for session continuity.
-  `/retro` analyzes failures and generates prevention measures.
-- Skill Lifecycle detects repeated procedures during execution.
-  `/retro` analyzes rework patterns after execution
-  to generate both rules (behavioral governance)
-  and skills (procedural patterns).
+- `/retro` analyzes rework patterns after execution
+  to generate rules (behavioral governance).
+- Skills are created through conversation with user approval.
+  `/retro` does not create or modify skills.
 
 ## When to Use
 
 - After task execution has completed (partially or fully)
-- Before `/handover` (recommended but not required)
 - Can be run multiple times (additive with de-duplication)
 
 ## Preconditions
@@ -29,16 +32,14 @@ and generates rules and skills to prevent recurrence.
 1. `/yoroshiku` has been invoked and GO was granted
 2. At least one agent result file exists
    in `.claude/state/agent-results/`
-3. For skill generation: `.claude/skills/` directory must exist
-   (if absent, skill generation is skipped)
+3. For rule generation: `.claude/rules/` directory must exist
 
 ## Data Sources
 
 1. Agent result files: `.claude/state/agent-results/*.json`
 2. Agent status files: `.claude/state/agent-status/*.json`
 3. Task definitions: `.claude/tasks/*.md`
-4. Skill candidates: `.claude/state/skill-candidates/*.json`
-5. Dashboard: `dashboard.md`
+4. Dashboard: `dashboard.md`
 
 ## Analysis Pipeline
 
@@ -107,26 +108,7 @@ Rule format:
 Rules must use the `retro-` filename prefix.
 This distinguishes them from human-authored rules.
 
-### Step 5: Skill Generation
-
-For repeating fix procedures (same fix sequence 2+ times):
-
-1. Run Stage 1 (Overlap Check) of skill evaluation
-2. Run Stage 2 (Value Assessment) of skill evaluation
-3. Skip Stages 3-4 (retro-specific exception)
-4. If passing, generate directly
-   to `.claude/skills/{name}/SKILL.md`
-5. No human approval required (retro exception)
-
-Retro-generated skills must include in metadata:
-
-```yaml
-metadata:
-  origin: retro
-  retro_date: "{ISO 8601}"
-```
-
-### Step 6: Report Generation
+### Step 5: Report Generation
 
 Generate `.claude/state/retro-report.md`
 summarizing all findings and generated artifacts.
@@ -149,7 +131,7 @@ Generated: {timestamp}
 - **Category**: {category}
 - **Evidence**: {specific data}
 - **Frequency**: {count}
-- **Action taken**: {rule created / skill created / none}
+- **Action taken**: {rule created / none}
 
 ## Rules Generated
 
@@ -157,23 +139,16 @@ Generated: {timestamp}
 |------|-------------|--------|
 | retro-{name}.md | {description} | approved/rejected |
 
-## Skills Generated
-
-| Skill | Description | Evaluation |
-|-------|-------------|------------|
-| {name} | {description} | Stage 1: pass, Stage 2: N/4 |
-
 ## Recommendations
 
-- {patterns that did not produce rules or skills but are noteworthy}
+- {patterns that did not produce rules but are noteworthy}
 ```
 
-## Decision Criteria: Rule vs. Skill
+## Rule Generation Criteria
 
 | Pattern Type | Artifact | Rationale |
 |-------------|--------|------|
 | Process gap (check X before Y) | Rule | Behavioral governance for all tasks |
-| Repeated fix procedure (XSS fix: A→B→C) | Skill | Procedural pattern with concrete steps |
 | Dependency ordering (task X before task Y) | Rule | Planning-time behavioral governance |
 | Human rejection pattern (approach X always rejected) | Rule | Captures human preference |
 | One-time config gap (lint rule missing) | Report only | Not recurring |
@@ -182,14 +157,13 @@ Generated: {timestamp}
 
 If fewer than 2 rework events exist across all categories,
 report "Insufficient data for retrospective analysis"
-and skip rule/skill generation.
+and skip rule generation.
 Still produce the retro report.
 
 ## Post-Generation Actions
 
 1. Stage generated files:
    `git add .claude/rules/retro-*.md`
-   `git add .claude/skills/`
    `git add .claude/state/retro-report.md`
 2. Commit: `:brain: Add retrospective learnings`
 3. Do NOT push (user controls push timing)
@@ -203,12 +177,11 @@ Still produce the retro report.
 - Must not perform implementation work
 - Must not start or stop the dev server
 - Rules require human approval per file
-- Skills are auto-approved (retro exception)
 
 ## Idempotency
 
 - Can be run multiple times per session
 - Additive: does not delete previous retro outputs
-- De-duplication: checks existing retro rules/skills
+- De-duplication: checks existing retro rules
   before generating new ones
 - Retro report is overwritten on each run

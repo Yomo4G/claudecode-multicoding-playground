@@ -23,7 +23,7 @@ of the following are true:
 
 ## Roles
 
-The system defines 8 agent roles:
+The system defines 9 agent roles:
 
 | Role | Description |
 |------|-------------|
@@ -31,6 +31,7 @@ The system defines 8 agent roles:
 | implementer | Writes product code after approval |
 | reviewer | Reviews code for quality and architecture |
 | security-auditor | Audits code and dependencies for security issues |
+| review-recorder | Consolidates review results into structured records |
 | e2e-tester | Runs end-to-end integration tests after implementation |
 | verifier | Runs tests, lint, and build checks |
 | refactorer | Simplifies and improves code structure |
@@ -94,7 +95,6 @@ The orchestrator terminates agents when:
 - The assigned task is complete
 - An unrecoverable error occurs
 - The agent times out (10 minutes without status update)
-- `/handover` is invoked
 
 ## State File Contracts
 
@@ -125,27 +125,6 @@ Path: `.claude/state/agent-results/{name}-{instance}-{task-id}.json`
   "summary": "<brief description>",
   "issues": [],
   "completed_at": "<ISO 8601>"
-}
-```
-
-### Skill Candidates (Agent-sourced)
-
-Path: `.claude/state/skill-candidates/{name}-{timestamp}.json`
-
-```json
-{
-  "candidate": "<skill-name>",
-  "source_agent": "<name>-<instance>",
-  "evaluation": {
-    "repeatability": true,
-    "complexity": true,
-    "generality": true,
-    "originality": true
-  },
-  "criteria_met": 4,
-  "trigger": "<trigger description>",
-  "steps": ["<step 1>", "<step 2>", "<step 3>"],
-  "detected_at": "<ISO 8601>"
 }
 ```
 
@@ -181,7 +160,7 @@ The reporter updates:
 - Agent Status table
 - Tasks Overview section
 - Overall Progress
-- Skill Candidates section
+- Review Summary (from `.claude/state/review-records/`)
 - Notes section
 
 ### Reporter Triggers
@@ -195,20 +174,23 @@ The orchestrator fires the reporter on these events:
 | agent-error | An agent enters error status |
 | phase-transition | A task moves to the next pipeline stage |
 | scaling-event | An agent instance is scaled up or down |
+| review-completed | A reviewer closes a review record |
+| record-completed | The review-recorder finishes writing a record |
 | session-resume | The orchestrator resumes from a paused session |
-| pre-handover | Before generating the handover document |
 | periodic | Every 3 completed tasks |
 
 ## Workflow Pipeline
 
 The default task workflow is:
 
-    implementer → e2e-tester → [reviewer, security-auditor] → verifier
+    implementer → e2e-tester → [reviewer, security-auditor] → review-recorder → verifier
 
 Rules:
 - E2e testing runs immediately after implementation
 - Review and security audit run in parallel after e2e passes
-- Verification runs only after both review and audit pass
+- Review-recorder runs after both reviewer and security-auditor complete
+- Review-recorder consolidates results into a unified review record
+- Verification runs only after review-recorder completes
 - If review or audit raises issues, the task returns to implementer
 - The refactorer may be inserted before verifier when requested
 
@@ -225,13 +207,58 @@ When the e2e-tester reports failure:
 5. After 3 failures, the task is blocked
    and human intervention is requested
 
+### Review Record Lifecycle
+
+Review records are structured markdown files
+that track review findings and their resolution.
+See `.claude/rules/review-records.md` for the full specification.
+
+The review record includes a Perspectives Applied section
+that documents all checklists verified and their outcomes.
+This ensures traceability of what was checked,
+not just what was found.
+
+The review record lifecycle within the workflow pipeline:
+
+1. **Review phase**: The reviewer and security-auditor
+   run in parallel. Each writes its results
+   (including findings and perspectives applied)
+   to `.claude/state/agent-results/`.
+
+2. **Record phase**: The review-recorder reads both
+   result files and creates a unified review record at
+   `.claude/state/review-records/{task-id}-review.md`
+   with Perspectives Applied, Findings, and status.
+
+3. **If findings exist**: The orchestrator reads the review record
+   and creates a fix subtask for the implementer.
+   The fix subtask includes the review record path.
+
+4. **Fix phase**: The implementer fixes the issues
+   and updates the review record's Fix Actions section
+   and each Finding's Resolution field.
+
+5. **Re-review phase**: The orchestrator re-assigns
+   the task to the reviewer. The reviewer verifies fixes
+   and updates its result file.
+
+6. **Re-record phase**: The review-recorder updates the record,
+   increments the revision number,
+   and sets status to `closed` if all findings are resolved.
+
+7. **If unresolved findings remain**: The cycle repeats
+   from step 3. Maximum 3 review cycles per task.
+
+Review records persist after task completion
+for traceability and retrospective analysis.
+
 ## Contract-First Pipeline Extension
 
 When tasks have shared contracts
 (as defined in `.claude/rules/shared-contracts.md`),
 the pipeline is extended:
 
-    contract-define → implement (parallel) → e2e-test → [review, security-auditor] → verifier
+    contract-define → implement (parallel) → e2e-test → [review, security-auditor] → review-recorder → verifier
 
 Rules:
 - The contract-define step runs before parallel implementation
@@ -296,23 +323,13 @@ When `/yoroshiku` grants GO and `.claude/agents/` exists:
 2. Read all agent definition YAMLs
 3. Create `.claude/state/agent-status/` directory if needed
 4. Create `.claude/state/agent-results/` directory if needed
-5. Create `.claude/state/skill-candidates/` directory if needed
+5. Create `.claude/state/review-records/` directory if needed
 6. Spawn agents with `min > 0` in the team configuration
 7. Update `dashboard.md` Agent Status table via reporter
 8. If resuming from a previous session
-   (HANDOVER.md or state files exist),
+   (state files exist),
    fire `session-resume` trigger for the reporter
    to sync dashboard with current state
-
-### `/handover`
-
-Before generating the handover document:
-
-1. Signal all agents to complete current work
-2. Wait for agents to reach `done` or `idle` status
-3. Terminate all agent instances
-4. Run reporter for final dashboard update
-5. Include agent summary in handover document
 
 ### `/retro`
 
@@ -322,23 +339,16 @@ When `/retro` is invoked:
 2. Read all agent status files from `.claude/state/agent-status/`
 3. Read task definitions from `.claude/tasks/`
 4. Analyze rework patterns across all categories
-5. Generate rules (with human approval) and skills (auto-approved)
+5. Generate rules (human approval)
 6. Generate retro report to `.claude/state/retro-report.md`
 7. Fire `retro-completed` trigger for the reporter
 
 ## Skill Lifecycle Integration
 
-Agents with `skill_detection: true` participate
-in the Skill Proposal Lifecycle.
-
-When an agent detects a skill candidate:
-
-1. Run the 4-stage evaluation check (per `skill-lifecycle.md`)
-2. Write the candidate to `.claude/state/skill-candidates/`
-3. The reporter includes candidates in the dashboard
-
-Cross-agent dedup is handled by the extended Stage 1 check
-defined in `skill-lifecycle.md`.
+Skills are created through conversation with user approval.
+Agents do not autonomously detect or propose skills
+during task execution or retrospective analysis.
+The `.claude/state/skill-candidates/` directory is not used.
 
 ## Single-Agent Fallback
 

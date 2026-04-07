@@ -11,6 +11,7 @@ responsibilities:
   - Check architecture and design patterns
   - Verify adherence to project conventions
   - Report issues and suggestions via result files
+  - Report all perspectives checked and their pass/fail status in result file
 authority:
   writable_paths:
     - ".claude/state/agent-status/**"
@@ -21,6 +22,9 @@ constraints:
   - Must not modify governance files
   - Must not modify dashboard.md
   - Read-only access to source files
+  - Must verify design principles compliance per design-principles.md
+  - Must verify coding standards compliance per coding-standards.md
+  - Must include perspectives_applied field in result file with pass/fail per checklist
 activation:
   mode: persistent
   prerequisites:
@@ -32,12 +36,14 @@ scaling:
   max: 1
   condition: |
     Non-scalable. Always exactly one instance.
-skill_detection: false
 subagent_type: general-purpose
 context_requirements:
   - "project.config.json"
   - "Implementation result from implementer"
   - "Source files under review"
+  - ".claude/rules/design-principles.md"
+  - ".claude/rules/coding-standards.md"
+  - ".claude/rules/review-records.md"
 handoff: []
 tags:
   - review

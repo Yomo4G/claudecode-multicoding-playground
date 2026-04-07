@@ -1,0 +1,51 @@
+kind: agent
+name: review-recorder
+version: 1
+role: review-recorder
+description: |
+  Consolidates review and security audit results
+  into structured review record markdown files.
+  Records all perspectives applied and their outcomes.
+responsibilities:
+  - Read reviewer result from agent-results
+  - Read security-auditor result from agent-results
+  - Create unified review record at .claude/state/review-records/{task-id}-review.md
+  - Record all perspectives applied (design-principles, coding-standards, owasp-top10)
+  - Record pass results for perspectives with no findings
+  - Update review record on re-review cycles (increment revision)
+authority:
+  writable_paths:
+    - ".claude/state/agent-status/**"
+    - ".claude/state/agent-results/**"
+    - ".claude/state/review-records/**"
+  permitted_commands: []
+constraints:
+  - Sole writer of review record markdown files
+  - Must not modify product code
+  - Must not modify governance files
+  - Must not modify dashboard.md
+  - Must include Perspectives Applied section in every record
+  - Must wait for both reviewer and security-auditor results
+activation:
+  mode: persistent
+  prerequisites:
+    - "Orchestrator has spawned this agent"
+    - "Reviewer has reported completion for the task"
+    - "Security-auditor has reported completion for the task"
+  trigger: []
+scaling:
+  min: 1
+  max: 1
+  condition: |
+    Non-scalable. Always exactly one instance.
+subagent_type: general-purpose
+context_requirements:
+  - "Reviewer result file for the task"
+  - "Security-auditor result file for the task"
+  - ".claude/rules/review-records.md"
+  - "Previous review record (if re-review cycle)"
+handoff: []
+tags:
+  - review
+  - recording
+  - traceability

@@ -17,6 +17,7 @@ All governance is expressed through filesystem state:
 - If a directory does not exist, Claude ignores the concept entirely
 - Humans may add governance directories at any time
 - Claude never creates, removes, or renames `.claude/` directories on its own
+- Protected paths (governance files, scripts, config) are enforced by a PreToolUse hook — Claude is blocked from modifying them without explicit human approval
 
 This ensures decisions are explicit, history is inspectable,
 and AI behavior is deterministic.
@@ -49,8 +50,8 @@ Renaming both the repository and local directory to match
 your product name is recommended.
 
 ```bash
-git clone https://github.com/your-account/claudecode-multicoding-playground.git
-mv claudecode-multicoding-playground your-product-name
+git clone https://github.com/your-account/ai-multicoding-playground.git
+mv ai-multicoding-playground your-product-name
 cd your-product-name
 ```
 
@@ -83,6 +84,7 @@ linter, testing tool, and runtime.
 
 Setup records **human decisions only** — it does not install
 dependencies, generate product code, or define governance content.
+It also configures a PostToolUse hook that automatically runs the selected formatter on every file edit by Claude Code.
 
 See [TECHNICAL-SETUP.md](TECHNICAL-SETUP.md) for details.
 
@@ -103,6 +105,17 @@ and hand execution over to the AI.
 Claude operates autonomously under strict permission rules.
 Monitor progress via `dashboard.md` in the repository root
 and only intervene when the dashboard shows blocked tasks.
+
+To view the dashboard in the browser with live updates:
+
+```bash
+pnpm dashboard
+```
+
+This starts a local viewer at `http://localhost:3333` that
+automatically refreshes when `dashboard.md` changes.
+Use `--no-open` to skip opening the browser.
+The viewer starts automatically when `/yoroshiku` grants GO.
 
 See [EXECUTION-ENGINE.md](EXECUTION-ENGINE.md) for details.
 

@@ -10,6 +10,7 @@ When updating this file, AI agents must follow these rules:
   - Overall Progress
   - Agent Status
   - Tasks Overview
+  - Review Summary
   - Skill Candidates
   - Retrospective
   - Notes (optional)
@@ -86,6 +87,18 @@ Tasks are shown with their current pipeline stage and assigned agent.
 Tasks requiring human intervention.
 
 - —
+
+---
+
+## Review Summary
+
+Review records from `.claude/state/review-records/`.
+
+| Task | Findings | Open | Resolved | Status | Reviewer |
+|------|----------|------|----------|--------|----------|
+| — | — | — | — | — | — |
+
+**Categories**: design-principle, coding-standard, owasp, architecture
 
 ---
 

@@ -37,7 +37,6 @@ scaling:
   condition: |
     Always one instance.
     E2e tests are run sequentially.
-skill_detection: false
 subagent_type: general-purpose
 context_requirements:
   - "project.config.json"

@@ -1,3 +1,10 @@
+---
+paths:
+  - "tests/**"
+  - "frontend/tests/**"
+  - "cypress/**"
+---
+
 # Integration Verification
 
 This rule governs end-to-end integration testing

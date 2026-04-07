@@ -244,7 +244,38 @@ async function main() {
     if (cfg.backendFramework) console.log(`   Backend framework: ${cfg.backendFramework}`);
     console.log(`   Database: ${cfg.database}`);
 
-    await writeConfig(cfg);
+    await writeConfig(cfg);                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                     
+      /* ---- Auto-configure PostToolUse hook for formatter ---- */                                                                                                                                                                                                  
+      const settingsPath = path.join(CLAUDE_DIR, 'settings.json');
+      let settings = {};                                                                                                                                                                                                                                             
+      try {
+        settings = JSON.parse(await fs.readFile(settingsPath, 'utf8'));                                                                                                                                                                                              
+      } catch (e) {                                         
+        if (e.code !== 'ENOENT') throw e;
+      }                                                                                                                                                                                                                                                              
+  
+      if (!settings.hooks) settings.hooks = {};                                                                                                                                                                                                                      
+      if (!settings.hooks.PostToolUse) settings.hooks.PostToolUse = [];
+                                                                                                                                                                                                                                                                     
+      // Remove existing format-on-save hook if present (idempotent)
+      settings.hooks.PostToolUse = settings.hooks.PostToolUse.filter(                                                                                                                                                                                                
+        (entry) => !entry.hooks?.some((h) => h.command?.includes('format-on-save')),                                                                                                                                                                                 
+      );                                                                                                                                                                                                                                                             
+                                                                                                                                                                                                                                                                     
+      // Add PostToolUse formatter hook                                                                                                                                                                                                                              
+      settings.hooks.PostToolUse.push({                     
+        matcher: 'Edit|Write',
+        hooks: [
+          {                                                                                                                                                                                                                                                          
+            type: 'command',
+            command: 'cat | bash scripts/format-on-save.sh',                                                                                                                                                                                                         
+          },                                                
+        ],
+      });
+
+      await fs.writeFile(settingsPath, JSON.stringify(settings, null, 2) + '\n');                                                                                                                                                                                 
+      console.log('  ✓ PostToolUse formatter hook configured in .claude/settings.json');
 
     console.log("\n✅ project.config.json updated:");
     console.log(JSON.stringify(cfg, null, 2));

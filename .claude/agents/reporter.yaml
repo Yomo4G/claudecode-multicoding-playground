@@ -11,7 +11,9 @@ responsibilities:
   - Update Overall Progress indicator
   - Update Skill Candidates section
   - Update Notes section when relevant
+  - Update Review Summary section from review records
   - Read agent results and status from state files
+  - Read review records from .claude/state/review-records/
 authority:
   writable_paths:
     - "dashboard.md"
@@ -33,20 +35,19 @@ activation:
     - agent-error
     - phase-transition
     - scaling-event
+    - review-completed
     - session-resume
-    - pre-handover
     - "periodic: every 3 tasks"
 scaling:
   min: 1
   max: 1
   condition: |
     Non-scalable. Always exactly one instance.
-skill_detection: false
 subagent_type: general-purpose
 context_requirements:
   - ".claude/state/agent-status/**"
   - ".claude/state/agent-results/**"
-  - ".claude/state/skill-candidates/**"
+  - ".claude/state/review-records/**"
   - "dashboard.md"
 handoff: []
 tags:

@@ -1,3 +1,9 @@
+---
+name: kickoff
+description: "One-time initialization ritual for Context Definition. Generates governance documents through structured Q&A. Use when starting a new project for the first time."
+disable-model-invocation: true
+---
+
 # /kickoff
 
 This command initializes governance documents for this project.
@@ -238,11 +244,11 @@ Kickoff MUST NOT:
 
 ## Execution Rules
 
-Kickoff MUST proceed in small, explicit steps.                                                            
-  
-When operating within the Context Definition phase,                                                       
-the outputs defined in "Context Definition Phase" take precedence over directory-based iteration.                                                           
-                                                                                                          
+Kickoff MUST proceed in small, explicit steps.
+
+When operating within the Context Definition phase,
+the outputs defined in "Context Definition Phase" take precedence over directory-based iteration.
+
 For each output:
 1. Explain what will be decided (briefly)
 2. Ask concrete questions

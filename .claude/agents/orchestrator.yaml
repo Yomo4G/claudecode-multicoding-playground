@@ -19,7 +19,6 @@ authority:
   writable_paths:
     - ".claude/state/agent-status/**"
     - ".claude/state/agent-results/**"
-    - ".claude/state/skill-candidates/**"
     - ".claude/tasks/**"
   permitted_commands:
     - "pnpm install"
@@ -43,7 +42,6 @@ scaling:
   condition: |
     Always exactly one instance.
     The orchestrator cannot be scaled.
-skill_detection: false
 subagent_type: null
 context_requirements:
   - "project.config.json"

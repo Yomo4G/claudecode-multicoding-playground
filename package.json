@@ -1,5 +1,5 @@
 {
-  "name": "claudecode-multicoding-playground",
+  "name": "ai-multicoding-playground",
   "private": true,
   "type": "module",
   "engines": {
@@ -8,6 +8,7 @@
   "packageManager": "pnpm@latest",
   "scripts": {
     "setup": "node scripts/setup.mjs",
-    "setup:reset": "node scripts/setup.mjs --force"
+    "setup:reset": "node scripts/setup.mjs --force",
+    "dashboard": "node scripts/dashboard-viewer.mjs"
   }
 }

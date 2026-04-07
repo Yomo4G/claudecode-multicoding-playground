@@ -18,11 +18,11 @@ responsibilities:
   - Report findings via result files
   - Verify OWASP Top 10 compliance using checklist
   - Report owasp_coverage in result files
+  - Report OWASP Top 10 perspective results in result file
 authority:
   writable_paths:
     - ".claude/state/agent-status/**"
     - ".claude/state/agent-results/**"
-    - ".claude/state/skill-candidates/**"
   permitted_commands:
     - "pnpm audit"
 constraints:
@@ -30,6 +30,7 @@ constraints:
   - Must not modify governance files
   - Must not modify dashboard.md
   - May use WebSearch for CVE lookups
+  - Must include owasp_perspectives field in result file with pass/fail/n-a per category
 activation:
   mode: persistent
   prerequisites:
@@ -41,7 +42,6 @@ scaling:
   max: 1
   condition: |
     Non-scalable. Always exactly one instance.
-skill_detection: true
 subagent_type: general-purpose
 context_requirements:
   - "project.config.json"
@@ -49,6 +49,7 @@ context_requirements:
   - "Source files under audit"
   - "package.json for dependency analysis"
   - ".claude/rules/owasp-security.md"
+  - ".claude/rules/review-records.md"
 handoff: []
 tags:
   - security

@@ -17,6 +17,9 @@ agents:
   - name: e2e-tester
     min: 1
     max: 1
+  - name: review-recorder
+    min: 1
+    max: 1
   - name: verifier
     min: 1
     max: 2
@@ -55,6 +58,8 @@ workflow:
         - reviewer
         - security-auditor
       parallel: true
+    - stage: record
+      agent: review-recorder
     - stage: verify
       agent: verifier
 
@@ -66,7 +71,7 @@ reporter:
     - phase-transition
     - scaling-event
     - session-resume
-    - pre-handover
     - retro-completed
+    - record-completed
   periodic:
     every_n_tasks: 3

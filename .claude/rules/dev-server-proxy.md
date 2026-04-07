@@ -1,3 +1,12 @@
+---
+paths:
+  - "**/vite.config.*"
+  - "**/next.config.*"
+  - "**/nuxt.config.*"
+  - "**/astro.config.*"
+  - "**/gatsby-config.*"
+---
+
 # Dev Server Proxy Configuration
 
 This rule ensures that frontend proxy configuration

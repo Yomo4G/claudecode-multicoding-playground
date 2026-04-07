@@ -100,25 +100,30 @@ jobs:
               errors=$((errors + 1))
             fi
 
-            # Required sections
-            if ! grep -q '## Triggers' "$skill_file"; then
-              echo "::error file=${skill_file}::Missing '## Triggers' section"
-              errors=$((errors + 1))
-            fi
-            if ! grep -q '## Steps' "$skill_file"; then
-              echo "::error file=${skill_file}::Missing '## Steps' section"
-              errors=$((errors + 1))
-            fi
-            if ! grep -q '## Tags' "$skill_file"; then
-              echo "::error file=${skill_file}::Missing '## Tags' section"
-              errors=$((errors + 1))
-            fi
+            # Determine skill type from frontmatter
+            if echo "$frontmatter" | grep -q 'disable-model-invocation:[[:space:]]*true'; then
+              # Command skill: only frontmatter validation (name + description)
+              echo "  Command skill: ${skill_name} (body section checks skipped)"
+            else
+              # Procedural skill: require sections and minimum steps
+              if ! grep -q '## Triggers' "$skill_file"; then
+                echo "::error file=${skill_file}::Missing '## Triggers' section"
+                errors=$((errors + 1))
+              fi
+              if ! grep -q '## Steps' "$skill_file"; then
+                echo "::error file=${skill_file}::Missing '## Steps' section"
+                errors=$((errors + 1))
+              fi
+              if ! grep -q '## Tags' "$skill_file"; then
+                echo "::error file=${skill_file}::Missing '## Tags' section"
+                errors=$((errors + 1))
+              fi
 
-            # Steps must have at least 3 items
-            step_count=$(grep -c '^[0-9]\+\.' "$skill_file" || true)
-            if [ "$step_count" -lt 3 ]; then
-              echo "::error file=${skill_file}::Must have at least 3 steps (found ${step_count})"
-              errors=$((errors + 1))
+              step_count=$(grep -c '^[0-9]\+\.' "$skill_file" || true)
+              if [ "$step_count" -lt 3 ]; then
+                echo "::error file=${skill_file}::Must have at least 3 steps (found ${step_count})"
+                errors=$((errors + 1))
+              fi
             fi
           done
 
@@ -127,38 +132,6 @@ jobs:
             exit 1
           fi
           echo "All skills are valid"
-
-  command-validation:
-    name: Validate Commands
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Check commands directory
-        id: check-commands
-        run: |
-          if [ -d ".claude/commands" ] && [ -n "$(ls .claude/commands/*.md 2>/dev/null)" ]; then
-            echo "has_commands=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_commands=false" >> "$GITHUB_OUTPUT"
-            echo "No commands found. Skipping."
-          fi
-
-      - name: Validate command files are non-empty
-        if: steps.check-commands.outputs.has_commands == 'true'
-        run: |
-          errors=0
-          for cmd in .claude/commands/*.md; do
-            if [ ! -s "$cmd" ]; then
-              echo "::error file=${cmd}::Command file is empty"
-              errors=$((errors + 1))
-            fi
-          done
-          if [ "$errors" -gt 0 ]; then
-            echo "::error::${errors} empty command file(s) found"
-            exit 1
-          fi
-          echo "All command files are valid"
 
   protected-files:
     name: Protected File Check
@@ -176,7 +149,6 @@ jobs:
             "^project\.config\.json$"
             "^\.claude/rules/"
             "^\.claude/agents/"
-            "^\.claude/commands/"
             "^\.claude/contexts/"
             "^\.claude/project-framing\.md$"
             "^scripts/"

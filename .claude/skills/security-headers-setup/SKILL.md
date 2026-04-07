@@ -1,10 +1,7 @@
 ---
 name: security-headers-setup
-description: >
-  Configures HTTP security headers to prevent common
-  web vulnerabilities including clickjacking, MIME sniffing,
-  and content injection.
-  Covers OWASP A05 (Security Misconfiguration).
+description: "Configures HTTP security headers to prevent common web vulnerabilities including clickjacking, MIME sniffing, and content injection. Covers OWASP A05. Use when setting up backend server configuration or frontend build tool security headers."
+user-invokable: false
 compatibility: Designed for Claude Code
 metadata:
   version: "1"

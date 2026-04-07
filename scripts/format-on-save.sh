@@ -1,0 +1,16 @@
+#!/bin/bash                                                                                                                                                                                                                                                        
+INPUT=$(cat)                                                                                                                                                                                                                                                       
+FILE_PATH=$(echo "$INPUT" | grep -o '"file_path"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*"file_path"[[:space:]]*:[[:space:]]*"//;s/"$//')                                                                                                            
+if [ -z "$FILE_PATH" ]; then exit 0; fi                                                                                                                                                                                                                            
+case "$FILE_PATH" in *.ts|*.tsx|*.js|*.jsx|*.css|*.json) ;; *) exit 0 ;; esac                                                                                                                                                                                      
+if [ ! -f "$FILE_PATH" ]; then exit 0; fi                                                                                                                                                                                                                          
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"                                                                                                                                                                                                                   
+CONFIG="$PROJECT_ROOT/project.config.json"                
+if [ ! -f "$CONFIG" ]; then exit 0; fi                                                                                                                                                                                                                             
+LINT=$(node -e "const c=JSON.parse(require('fs').readFileSync('$CONFIG','utf8')); process.stdout.write(c.lint || '')")
+case "$LINT" in                                                                                                                                                                                                                                                    
+  biome) npx biome check --write "$FILE_PATH" 2>/dev/null ;;
+  eslint) npx eslint --fix "$FILE_PATH" 2>/dev/null ;;                                                                                                                                                                                                             
+  prettier) npx prettier --write "$FILE_PATH" 2>/dev/null ;;
+esac                                                                                                                                                                                                                                                               
+exit 0

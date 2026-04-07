@@ -111,7 +111,6 @@ of the current execution state.
 | **Agent Status** | What each agent is currently doing (idle, working, blocked, error, done) |
 | **Tasks Overview** | All tasks with their pipeline stage, assigned agent, and status |
 | **Blocked** | Tasks requiring human intervention |
-| **Skill Candidates** | Detected skill patterns awaiting batch proposal |
 | **Retrospective** | Results from the last `/retro` run |
 | **Notes** | Short human-readable notes |
 
@@ -128,22 +127,6 @@ such as task completion, task start, or agent errors.
 
 ## Session Management
 
-### /handover — Preserve Context Across Sessions
-
-Run `/handover` when ending a session or approaching the context window limit.
-
-It generates `.claude/state/HANDOVER.md` containing:
-
-- **Session Summary** — what was accomplished and what remains
-- **Decisions Made** — all human-confirmed decisions with rationale
-- **Current State** — modified files, task status, in-progress work
-- **Issues and Pitfalls** — problems encountered and workarounds
-- **Lessons Learned** — patterns that worked or failed
-- **Next Steps** — what the next session should do first
-
-The handover is automatically committed and pushed
-so the next session can pick up where the previous one left off.
-
 ### /retro — AI Self-Reflection
 
 Run `/retro` after completing tasks to analyze rework patterns.
@@ -156,5 +139,4 @@ It examines:
 
 Based on patterns found, it may generate:
 - **Rules** (`.claude/rules/retro-*.md`) — with human approval per file
-- **Skills** (`.claude/skills/*/SKILL.md`) — auto-approved via retro path
 - **Report** (`.claude/state/retro-report.md`) — always generated
