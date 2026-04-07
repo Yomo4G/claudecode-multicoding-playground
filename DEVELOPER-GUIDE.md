@@ -10,7 +10,7 @@ For getting started, see [README.md](README.md).
 ## Repository Structure
 
 ```
-/claudecode-multicoding-playground
+/ai-multicoding-playground
 ├─ .github/
 │  └─ workflows/                  # CI workflows (lifecycle-aware)
 │     ├─ governance.yml           # Phase 1: YAML, skill, protected file checks
@@ -19,15 +19,9 @@ For getting started, see [README.md](README.md).
 │     └─ security.yml             # Phase 4: secret detection, dependency audit
 ├─ .claude/                       # Governance root read by Claude Code
 │  ├─ project-framing.md          # Project Framing specification and readiness checklist
-│  ├─ commands/                   # Explicit commands that trigger state transitions
-│  │  ├─ kickoff.md               # Ritual to start Context Definition
-│  │  ├─ plan.md                  # Project Framing planning command
-│  │  ├─ yoroshiku.md             # GO command that hands execution over to Claude
-│  │  ├─ handover.md              # Session handover and context preservation
-│  │  └─ retro.md                 # AI retrospective and pattern analysis
 │  ├─ rules/                      # Rules that constrain Claude Code behavior
 │  │  ├─ execution-permissions.md # Writable/protected paths and permitted commands
-│  │  ├─ skill-lifecycle.md       # Skill detection, evaluation, and proposal rules
+│  │  ├─ skill-lifecycle.md       # Skill evaluation and proposal rules
 │  │  ├─ agent-orchestration.md   # Multi-agent lifecycle, state contracts, pipeline
 │  │  ├─ owasp-security.md        # OWASP Top 10 checklist and security principles
 │  │  └─ mcp-usage.md             # MCP usage policy (human-managed)
@@ -41,14 +35,17 @@ For getting started, see [README.md](README.md).
 │  │  ├─ verifier.yaml            # Test/lint/build agent (scalable, max 2)
 │  │  ├─ refactorer.yaml          # On-demand refactoring agent
 │  │  └─ reporter.yaml            # Dashboard update agent (trigger-based)
-│  ├─ skills/                     # Reusable procedural skills
+│  ├─ skills/                     # Skills (commands + procedural)
+│  │  ├─ kickoff/                 # /kickoff — Context Definition ritual
+│  │  ├─ plan/                    # /plan — Project Framing command
+│  │  ├─ yoroshiku/               # /yoroshiku — GO grant ceremony
+│  │  ├─ retro/                   # /retro — AI retrospective and pattern analysis
 │  │  ├─ secure-auth-setup/       # Authentication implementation (OWASP A02, A07)
 │  │  ├─ input-sanitization/      # Input validation (OWASP A03)
 │  │  ├─ access-control-enforcement/ # Access control (OWASP A01)
 │  │  ├─ security-headers-setup/  # Security headers (OWASP A05)
 │  │  └─ security-audit-logging/  # Audit logging (OWASP A09)
 │  ├─ state/                      # Execution state (runtime, not governance)
-│  │  ├─ HANDOVER.md              # Session handover document
 │  │  └─ kickoff.json             # Kickoff progress tracking
 │  └─ tasks/                      # Task definitions for execution
 │
@@ -70,80 +67,44 @@ For getting started, see [README.md](README.md).
 
 ---
 
-## Skill Auto-Proposal
+## Skills
 
-When `.claude/skills/` exists, Claude Code monitors its own actions
-for repeating patterns and proposes reusable skills.
+The `.claude/skills/` directory contains two types of skills:
 
-Skills are **steps-based procedures**, not code templates.
-They describe *what to do*, not *how to write it*.
+| Type | Frontmatter marker | Body structure | Invocation |
+|------|-------------------|----------------|------------|
+| **Command skill** | `disable-model-invocation: true` | Free-form prose | User runs `/command` explicitly |
+| **Procedural skill** | `user-invokable: false` | `## Triggers`, `## Steps`, `## Tags` | Auto-matched during task execution |
 
-### How It Works
+### Command Skills
 
-1. **Detection** — Claude notices repeated actions during development
-2. **Evaluation** — Each candidate passes a 4-stage quality check
-3. **Recording** — Approved candidates are logged in `dashboard.md`
-4. **Batch proposal** — At end-of-development, all candidates are proposed at once
-5. **Generation** — Human-approved skills become `.claude/skills/{name}/SKILL.md`
+Command skills define lifecycle phases and ceremonies.
+They are invoked explicitly by the user (e.g., `/kickoff`, `/plan`).
 
-### 4-Stage Evaluation Check
+Skills: `kickoff`, `plan`, `yoroshiku`, `retro`
 
-Before any candidate is recorded, Claude runs these checks in order.
-If a check fails, the candidate is rejected and remaining checks are skipped.
+### Procedural Skills
 
-| Stage | Check | Rejection condition |
-|-------|-------|---------------------|
-| 1 | **Existing Skills overlap** | Substantially overlaps with an existing skill |
-| 2 | **Value assessment** (4 criteria) | Does not meet minimum threshold (default: 3/4) |
-| 3 | **Web search** | Pattern is entirely covered by a well-documented practice |
-| 4 | **Official documentation analysis** | Pattern is an officially recommended approach |
+Procedural skills are steps-based procedures triggered automatically
+when task conditions match. They describe *what to do*, not *how to write it*.
 
-Stages 1–2 are lightweight (local file reads).
-Stages 3–4 are heavier (web search and document fetch)
-and only run for candidates that survive the first two.
+Skills: `secure-auth-setup`, `input-sanitization`,
+`access-control-enforcement`, `security-headers-setup`, `security-audit-logging`
 
-### Value Assessment Criteria
+### Skill Acquisition
 
-| Criterion | Description |
-|-----------|-------------|
-| **Repeatability** | Same action performed 2+ times in a session |
-| **Complexity** | The procedure involves 3+ distinct steps |
-| **Generality** | Applicable beyond the specific instance |
-| **Originality** | Not fully covered by a well-known public best practice |
+Skills are created through conversation at any time.
+The user requests a skill, and Claude Code generates it
+after overlap check and user approval.
 
-A candidate must meet at least **3 out of 4** criteria by default.
+Flow:
+1. **Overlap check** — Verify no existing skill covers the same purpose
+2. **Proposal** — Present the proposed SKILL.md to the user
+3. **Approval** — User confirms before the skill is generated
 
-### Threshold Configuration
+### Enabling Skills
 
-The threshold is configurable by editing `.claude/rules/skill-lifecycle.md` directly.
-Look for the `minimum_criteria` / `total_criteria` values:
-
-```
-minimum_criteria: 3
-total_criteria: 4
-```
-
-Increase to `4/4` for stricter evaluation
-or decrease to `2/4` for more permissive recording.
-
-### Dashboard Integration
-
-Skill candidates appear in `dashboard.md` under a **Skill Candidates** section.
-
-- Candidates start with status `pending`
-- Humans can change status to `rejected` at any time
-- Candidates not marked `rejected` remain as proposal targets
-- At end-of-development, all `pending` candidates are proposed for final approval
-
-### Enabling Skill Auto-Proposal
-
-Create the `.claude/skills/` directory:
-
-```bash
-mkdir -p .claude/skills
-```
-
-If the directory does not exist, the entire feature is disabled.
+If `.claude/skills/` does not exist, the entire skill lifecycle is disabled.
 Directory existence = human decision to enable.
 
 ---
@@ -171,7 +132,10 @@ and skips gracefully when not applicable.
 **governance.yml** — Runs on every push and pull request.
 - Validates YAML syntax for all `.claude/agents/*.yaml` files
 - Verifies all agents referenced in `team.yaml` have corresponding definition files
-- Validates SKILL.md format (frontmatter fields, required sections, minimum 3 steps)
+- Validates SKILL.md format:
+  - All skills: frontmatter `name` and `description` required, directory name must match
+  - Command skills (`disable-model-invocation: true`): frontmatter-only validation
+  - Procedural skills: `## Triggers`, `## Steps`, `## Tags` sections required, minimum 3 steps
 - Warns when protected files are modified in a pull request
 
 **config-validation.yml** — Triggered by `project.config.json` changes.

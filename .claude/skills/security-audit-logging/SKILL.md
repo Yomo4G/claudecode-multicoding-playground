@@ -1,10 +1,7 @@
 ---
 name: security-audit-logging
-description: >
-  Implements structured logging for security-relevant events
-  including authentication, authorization failures, and
-  admin actions.
-  Covers OWASP A09 (Security Logging and Monitoring Failures).
+description: "Implements structured logging for security-relevant events including authentication, authorization failures, and admin actions. Covers OWASP A09. Use when implementing authentication events, admin actions, or authorization checks."
+user-invokable: false
 compatibility: Designed for Claude Code
 metadata:
   version: "1"

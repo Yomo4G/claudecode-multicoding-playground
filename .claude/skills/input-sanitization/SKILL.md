@@ -1,9 +1,7 @@
 ---
 name: input-sanitization
-description: >
-  Applies input validation and sanitization at both
-  frontend and backend layers to prevent injection attacks.
-  Covers OWASP A03 (Injection) and Defense in Depth principle.
+description: "Applies input validation and sanitization at both frontend and backend layers to prevent injection attacks. Covers OWASP A03. Use when handling user input in forms, URL parameters, or API request bodies."
+user-invokable: false
 compatibility: Designed for Claude Code
 metadata:
   version: "1"

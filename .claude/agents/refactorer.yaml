@@ -28,6 +28,8 @@ constraints:
   - Must not modify dashboard.md
   - Must not change external interfaces
   - Activated only on explicit request
+  - Must follow design principles from design-principles.md
+  - Must follow coding standards from coding-standards.md
 activation:
   mode: on-demand
   prerequisites:
@@ -42,12 +44,13 @@ scaling:
   condition: |
     On-demand only. Not spawned by default.
     Activated when refactoring is explicitly requested.
-skill_detection: true
 subagent_type: general-purpose
 context_requirements:
   - "project.config.json"
   - "Source files to refactor"
   - "Test suite for equivalence verification"
+  - ".claude/rules/design-principles.md"
+  - ".claude/rules/coding-standards.md"
 handoff: []
 tags:
   - refactoring

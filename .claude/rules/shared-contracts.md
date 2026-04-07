@@ -1,3 +1,8 @@
+---
+paths:
+  - ".claude/tasks/**"
+---
+
 # Shared Contracts
 
 This rule governs shared contract specifications

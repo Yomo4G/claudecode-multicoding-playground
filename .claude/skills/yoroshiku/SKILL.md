@@ -1,3 +1,9 @@
+---
+name: yoroshiku
+description: "Grants GO and hands execution over to Claude Code. Represents trust, shared understanding, and human acceptance. Use to grant GO and begin autonomous execution."
+disable-model-invocation: true
+---
+
 # /yoroshiku
 
 `/yoroshiku` is the explicit command that grants **GO** and hands execution
@@ -54,6 +60,8 @@ When `/yoroshiku` is invoked correctly, Claude Code must:
   - defined state constraints
 - Follow the Dev Server Lifecycle rules defined in `CLAUDE.md`
   when dev server preconditions are met during task execution
+- Start the dashboard viewer by running `pnpm dashboard` as a background process
+  (the script auto-opens the browser)
 
 Claude Code must not:
 

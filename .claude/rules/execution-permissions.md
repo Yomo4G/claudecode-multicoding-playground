@@ -16,6 +16,7 @@ under the following paths:
 - `backend/**`
 - `db/**`
 - `.claude/state/**`
+  (includes `.claude/state/review-records/**` for review record markdown)
 - `.claude/tasks/**`
 - `.claude/skills/**`
 - `dashboard.md`
@@ -33,9 +34,9 @@ Any modification outside these paths requires explicit human approval.
 
 - `CLAUDE.md`
 - `project.config.json`
-- `.claude/commands/**`
 - `.claude/rules/**`
 - `.claude/contexts/**`
+- `.claude/policies/**`
 - `.claude/agents/**`
 - `.claude/project-framing.md`
 - `scripts/**`
@@ -93,6 +94,21 @@ additional write permissions apply:
 
 These permissions are ONLY active during `/retro` execution.
 They do not apply during normal task execution.
+
+### Conversation-Based Skill Creation
+
+When the user explicitly requests skill creation
+through conversation, the following write permissions apply:
+
+- `.claude/skills/*/SKILL.md` may be created
+  (with human approval per skill)
+- `.claude/skills/*/scripts/**` may be created
+  (as part of the approved skill)
+- `.claude/skills/*/references/**` may be created
+  (as part of the approved skill)
+
+These permissions require direct human interaction.
+They do not apply during autonomous task execution.
 
 ## Enforcement
 

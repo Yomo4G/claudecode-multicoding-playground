@@ -15,7 +15,6 @@ authority:
   writable_paths:
     - ".claude/state/agent-status/**"
     - ".claude/state/agent-results/**"
-    - ".claude/state/skill-candidates/**"
   permitted_commands:
     - "pnpm test"
     - "pnpm lint"
@@ -37,13 +36,13 @@ scaling:
   condition: |
     Scale up when pending_verifications >= 2.
     Scale down when idle > 5 minutes.
-skill_detection: true
 subagent_type: general-purpose
 context_requirements:
   - "project.config.json"
   - "Review and audit results"
   - "Source files to verify"
   - ".claude/rules/dev-server-proxy.md"
+  - ".claude/rules/coding-standards.md"
 handoff: []
 tags:
   - testing

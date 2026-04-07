@@ -1,10 +1,7 @@
 ---
 name: secure-auth-setup
-description: >
-  Sets up secure authentication with password hashing,
-  session management, and email verification.
-  Covers OWASP A02 (Cryptographic Failures) and
-  A07 (Identification and Authentication Failures).
+description: "Sets up secure authentication with password hashing, session management, and email verification. Covers OWASP A02 and A07. Use when implementing user registration, login, or session management."
+user-invokable: false
 compatibility: Designed for Claude Code
 metadata:
   version: "1"

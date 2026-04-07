@@ -1,3 +1,9 @@
+---
+name: plan
+description: "Project Framing command. Verifies readiness, defines rules, tasks, and completion criteria. Use after kickoff to frame the project and define execution tasks."
+disable-model-invocation: true
+---
+
 # Plan
 
 This document defines the behavior and responsibilities of the `/plan` command.
@@ -116,7 +122,7 @@ Before granting GO, the responsible human confirms:
       and accept the associated risks.
 - [ ] I understand which decisions are delegated to AI
       and which require human judgment.
-- [ ] I understand what “finish” means for this project
+- [ ] I understand what "finish" means for this project
       and how completion will be evaluated.
 
 ## Granting GO

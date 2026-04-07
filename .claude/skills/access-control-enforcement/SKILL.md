@@ -1,9 +1,7 @@
 ---
 name: access-control-enforcement
-description: >
-  Enforces route-level and data-level access control
-  to prevent unauthorized access and IDOR vulnerabilities.
-  Covers OWASP A01 (Broken Access Control).
+description: "Enforces route-level and data-level access control to prevent unauthorized access and IDOR vulnerabilities. Covers OWASP A01. Use when creating API endpoints that access user-specific data or admin routes."
+user-invokable: false
 compatibility: Designed for Claude Code
 metadata:
   version: "1"
