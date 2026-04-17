@@ -15,6 +15,7 @@ responsibilities:
   - Make scaling decisions
   - Handle agent errors and timeouts
   - Manage shared contract lifecycle (define, distribute, coordinate changes)
+  - Keep the reporter agent active throughout execution and invoke it on every trigger event defined in team.yaml so dashboard.md reflects the current state
 authority:
   writable_paths:
     - ".claude/state/agent-status/**"
