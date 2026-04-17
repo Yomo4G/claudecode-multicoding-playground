@@ -53,6 +53,7 @@ Responsibilities:
 - Make scaling decisions based on defined criteria
 - Terminate agents when work is complete
 - Manage shared contract lifecycle per shared-contracts rule
+- Keep the reporter agent active throughout execution and invoke it on every trigger event defined in team.yaml so `dashboard.md` always reflects the current state
 
 Prohibitions:
 - The orchestrator must NOT write product code directly
